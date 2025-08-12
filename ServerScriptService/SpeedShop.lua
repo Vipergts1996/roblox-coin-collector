@@ -49,24 +49,6 @@ function SpeedShop.updatePlayerStats(player, humanoid)
     humanoid.WalkSpeed = newSpeed
     humanoid.JumpPower = newJumpPower
     
-    local character = humanoid.Parent
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then return end
-    
-    local bodyVelocity = rootPart:FindFirstChild("CustomGravity")
-    if bodyVelocity then
-        bodyVelocity:Destroy()
-    end
-    
-    if jumpLevel.Value > 1 then
-        local gravityReduction = (jumpLevel.Value - 1) * 15
-        local customGravity = Instance.new("BodyVelocity")
-        customGravity.Name = "CustomGravity"
-        customGravity.MaxForce = Vector3.new(0, gravityReduction * 1000, 0)
-        customGravity.Velocity = Vector3.new(0, gravityReduction, 0)
-        customGravity.Parent = rootPart
-    end
-    
     print(player.Name .. " stats updated - Speed: " .. newSpeed .. ", Jump: " .. newJumpPower)
 end
 
