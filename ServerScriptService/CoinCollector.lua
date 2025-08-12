@@ -46,7 +46,13 @@ function CoinCollector.onCoinTouched(hit, hitbox)
         return 
     end
     
-    coinsValue.Value = coinsValue.Value + 1
+    local coinValueData = hitbox:FindFirstChild("CoinValue")
+    local coinWorth = 1
+    if coinValueData then
+        coinWorth = coinValueData.Value
+    end
+    
+    coinsValue.Value = coinsValue.Value + coinWorth
     
     local collectSound = Instance.new("Sound")
     collectSound.SoundId = "rbxasset://sounds/electronicpingshort.wav"
@@ -60,7 +66,7 @@ function CoinCollector.onCoinTouched(hit, hitbox)
     
     hitbox:Destroy()
     
-    print(player.Name .. " collected a coin! Total: " .. coinsValue.Value)
+    print(player.Name .. " collected a " .. coinWorth .. " coin! Total: " .. coinsValue.Value)
 end
 
 function CoinCollector.setupCoin(hitbox)

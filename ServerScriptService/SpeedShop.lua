@@ -3,21 +3,30 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local SpeedShop = {}
 
-local remoteEvent = Instance.new("RemoteEvent")
-remoteEvent.Name = "PurchaseSpeedUpgrade"
-remoteEvent.Parent = ReplicatedStorage
+local speedUpgradeEvent = Instance.new("RemoteEvent")
+speedUpgradeEvent.Name = "PurchaseSpeedUpgrade"
+speedUpgradeEvent.Parent = ReplicatedStorage
+
+local jumpUpgradeEvent = Instance.new("RemoteEvent")
+jumpUpgradeEvent.Name = "PurchaseJumpUpgrade"
+jumpUpgradeEvent.Parent = ReplicatedStorage
 
 function SpeedShop.onPlayerAdded(player)
     local leaderstats = player:WaitForChild("leaderstats")
     
     local speedLevel = Instance.new("IntValue")
     speedLevel.Name = "SpeedLevel"
-    speedLevel.Value = 0
+    speedLevel.Value = 1
     speedLevel.Parent = leaderstats
+    
+    local jumpLevel = Instance.new("IntValue")
+    jumpLevel.Name = "JumpLevel"
+    jumpLevel.Value = 1
+    jumpLevel.Parent = leaderstats
     
     local function onCharacterAdded(character)
         local humanoid = character:WaitForChild("Humanoid")
-        SpeedShop.updatePlayerSpeed(player, humanoid)
+        SpeedShop.updatePlayerStats(player, humanoid)
     end
     
     player.CharacterAdded:Connect(onCharacterAdded)
@@ -26,17 +35,39 @@ function SpeedShop.onPlayerAdded(player)
     end
 end
 
-function SpeedShop.updatePlayerSpeed(player, humanoid)
+function SpeedShop.updatePlayerStats(player, humanoid)
     local leaderstats = player:FindFirstChild("leaderstats")
     if not leaderstats then return end
     
     local speedLevel = leaderstats:FindFirstChild("SpeedLevel")
-    if not speedLevel then return end
+    local jumpLevel = leaderstats:FindFirstChild("JumpLevel")
+    if not speedLevel or not jumpLevel then return end
     
-    local newSpeed = 16 + (speedLevel.Value * 4)
+    local newSpeed = 16 + ((speedLevel.Value - 1) * 4)
+    local newJumpPower = 50 + ((jumpLevel.Value - 1) * 5)
+    
     humanoid.WalkSpeed = newSpeed
+    humanoid.JumpPower = newJumpPower
     
-    print(player.Name .. " speed updated to: " .. newSpeed)
+    local character = humanoid.Parent
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return end
+    
+    local bodyVelocity = rootPart:FindFirstChild("CustomGravity")
+    if bodyVelocity then
+        bodyVelocity:Destroy()
+    end
+    
+    if jumpLevel.Value > 1 then
+        local gravityReduction = (jumpLevel.Value - 1) * 15
+        local customGravity = Instance.new("BodyVelocity")
+        customGravity.Name = "CustomGravity"
+        customGravity.MaxForce = Vector3.new(0, gravityReduction * 1000, 0)
+        customGravity.Velocity = Vector3.new(0, gravityReduction, 0)
+        customGravity.Parent = rootPart
+    end
+    
+    print(player.Name .. " stats updated - Speed: " .. newSpeed .. ", Jump: " .. newJumpPower)
 end
 
 function SpeedShop.purchaseSpeedUpgrade(player)
@@ -48,19 +79,44 @@ function SpeedShop.purchaseSpeedUpgrade(player)
     
     if not coins or not speedLevel then return end
     
-    local cost = 10 + (speedLevel.Value * 5)
+    local cost = 10 + ((speedLevel.Value - 1) * 5)
     
     if coins.Value >= cost then
         coins.Value = coins.Value - cost
         speedLevel.Value = speedLevel.Value + 1
         
         if player.Character and player.Character:FindFirstChild("Humanoid") then
-            SpeedShop.updatePlayerSpeed(player, player.Character.Humanoid)
+            SpeedShop.updatePlayerStats(player, player.Character.Humanoid)
         end
         
         print(player.Name .. " purchased speed upgrade! New level: " .. speedLevel.Value)
     else
         print(player.Name .. " doesn't have enough coins for speed upgrade")
+    end
+end
+
+function SpeedShop.purchaseJumpUpgrade(player)
+    local leaderstats = player:FindFirstChild("leaderstats")
+    if not leaderstats then return end
+    
+    local coins = leaderstats:FindFirstChild("Coins")
+    local jumpLevel = leaderstats:FindFirstChild("JumpLevel")
+    
+    if not coins or not jumpLevel then return end
+    
+    local cost = 15 + ((jumpLevel.Value - 1) * 8)
+    
+    if coins.Value >= cost then
+        coins.Value = coins.Value - cost
+        jumpLevel.Value = jumpLevel.Value + 1
+        
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            SpeedShop.updatePlayerStats(player, player.Character.Humanoid)
+        end
+        
+        print(player.Name .. " purchased jump upgrade! New level: " .. jumpLevel.Value)
+    else
+        print(player.Name .. " doesn't have enough coins for jump upgrade")
     end
 end
 
@@ -71,8 +127,12 @@ function SpeedShop.start()
         SpeedShop.onPlayerAdded(player)
     end
     
-    remoteEvent.OnServerEvent:Connect(function(player)
+    speedUpgradeEvent.OnServerEvent:Connect(function(player)
         SpeedShop.purchaseSpeedUpgrade(player)
+    end)
+    
+    jumpUpgradeEvent.OnServerEvent:Connect(function(player)
+        SpeedShop.purchaseJumpUpgrade(player)
     end)
     
     print("Speed shop system started!")
