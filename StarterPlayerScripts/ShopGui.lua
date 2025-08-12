@@ -187,11 +187,11 @@ local function updateShopDisplay()
         end
         
         -- Jump upgrade info
-        local currentJump = 50 + ((jumpLevel.Value - 1) * 5)
-        local nextJump = currentJump + 5
+        local currentJump = 50 + ((jumpLevel.Value - 1) * 20)
+        local nextJump = currentJump + 20
         local jumpCost = 15 + ((jumpLevel.Value - 1) * 8)
         
-        jumpInfo.Text = "Level " .. jumpLevel.Value .. " Jump: " .. currentJump .. "\nNext Level: " .. nextJump .. " (+5)"
+        jumpInfo.Text = "Level " .. jumpLevel.Value .. " Jump: " .. currentJump .. "\nNext Level: " .. nextJump .. " (+20)"
         jumpBuyButton.Text = "Buy for " .. jumpCost .. " Coins"
         
         if coins.Value >= jumpCost then

@@ -44,7 +44,7 @@ function SpeedShop.updatePlayerStats(player, humanoid)
     if not speedLevel or not jumpLevel then return end
     
     local newSpeed = 16 + ((speedLevel.Value - 1) * 4)
-    local newJumpPower = 50 + ((jumpLevel.Value - 1) * 5)
+    local newJumpPower = 50 + ((jumpLevel.Value - 1) * 20)
     
     humanoid.WalkSpeed = newSpeed
     humanoid.JumpPower = newJumpPower
