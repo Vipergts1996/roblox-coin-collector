@@ -24,7 +24,7 @@ This is a Roblox coin collection game with an upgrade shop system. Players colle
 
 ### Coin System
 - **Yellow coins** (60% spawn rate): Worth 1 coin
-- **Red coins** (30% spawn rate): Worth 2 coins  
+- **Green coins** (30% spawn rate): Worth 2 coins  
 - **Blue coins** (10% spawn rate): Worth 5 coins
 - Coins use invisible 12x12x12 hitboxes for collection detection
 - Each coin stores its value in a CoinValue IntValue
@@ -38,7 +38,7 @@ This is a Roblox coin collection game with an upgrade shop system. Players colle
 ### Client-Server Communication
 - Uses ReplicatedStorage RemoteEvents for upgrade purchases
 - Client GUI updates automatically when leaderstats change
-- Shop opens with "B" key or clicking shop button
+- Two upgrade buttons permanently displayed at bottom center of screen
 
 ### Known Issues to Watch For
 - Coin collection can fail if hair/accessories touch coins - the code searches up parent hierarchy to find character

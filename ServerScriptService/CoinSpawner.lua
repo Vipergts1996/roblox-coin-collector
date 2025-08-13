@@ -23,7 +23,7 @@ function CoinSpawner.createCoin(position, coinType)
     local coin = Instance.new("Part")
     coin.Name = "CoinVisual"
     coin.Shape = Enum.PartType.Cylinder
-    coin.Size = Vector3.new(0.2, 6, 6)
+    coin.Size = Vector3.new(0.1, 3, 3)
     coin.Position = position
     coin.Anchored = false
     coin.CanCollide = false
@@ -33,14 +33,14 @@ function CoinSpawner.createCoin(position, coinType)
     local coinValue = 1
     local lightColor = Color3.fromRGB(255, 215, 0)
     
-    if coinType == "red" then
-        coin.BrickColor = BrickColor.new("Bright red")
+    if coinType == "green" then
+        coin.BrickColor = BrickColor.new("Bright green")
         coinValue = 2
-        lightColor = Color3.fromRGB(255, 0, 0)
+        lightColor = Color3.fromRGB(100, 255, 100)
     elseif coinType == "blue" then
         coin.BrickColor = BrickColor.new("Bright blue")
         coinValue = 5
-        lightColor = Color3.fromRGB(0, 100, 255)
+        lightColor = Color3.fromRGB(150, 200, 255)
     else
         coin.BrickColor = BrickColor.new("Bright yellow")
         coinValue = 1
@@ -59,9 +59,45 @@ function CoinSpawner.createCoin(position, coinType)
     
     local pointLight = Instance.new("PointLight")
     pointLight.Color = lightColor
-    pointLight.Brightness = 2
-    pointLight.Range = 10
+    pointLight.Brightness = 1.5
+    pointLight.Range = 8
     pointLight.Parent = coin
+    
+    -- Create a glowing aura part
+    local auraPart = Instance.new("Part")
+    auraPart.Name = "CoinAura"
+    auraPart.Shape = Enum.PartType.Ball
+    auraPart.Size = Vector3.new(5, 5, 5)
+    auraPart.Position = coin.Position
+    auraPart.Anchored = false
+    auraPart.CanCollide = false
+    auraPart.Material = Enum.Material.Neon
+    auraPart.BrickColor = coin.BrickColor
+    auraPart.Transparency = 0.9
+    auraPart.Parent = hitbox
+    
+    local auraWeld = Instance.new("WeldConstraint")
+    auraWeld.Part0 = coin
+    auraWeld.Part1 = auraPart
+    auraWeld.Parent = hitbox
+    
+    -- Add a second smaller glow layer
+    local innerGlow = Instance.new("Part")
+    innerGlow.Name = "InnerGlow"
+    innerGlow.Shape = Enum.PartType.Ball
+    innerGlow.Size = Vector3.new(3.5, 3.5, 3.5)
+    innerGlow.Position = coin.Position
+    innerGlow.Anchored = false
+    innerGlow.CanCollide = false
+    innerGlow.Material = Enum.Material.Neon
+    innerGlow.BrickColor = coin.BrickColor
+    innerGlow.Transparency = 0.85
+    innerGlow.Parent = hitbox
+    
+    local innerWeld = Instance.new("WeldConstraint")
+    innerWeld.Part0 = coin
+    innerWeld.Part1 = innerGlow
+    innerWeld.Parent = hitbox
     
     local spinConnection = RunService.Heartbeat:Connect(function()
         if hitbox.Parent then
@@ -103,7 +139,7 @@ function CoinSpawner.getRandomCoinType()
     if rand <= 10 then
         return "blue"
     elseif rand <= 40 then
-        return "red"
+        return "green"
     else
         return "yellow"
     end
