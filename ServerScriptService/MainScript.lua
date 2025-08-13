@@ -1,7 +1,13 @@
+-- DEBUG MODE SWITCH - Set to true for 4x orb values
+local DEBUG_MODE = true
+
 local GameManager = require(script.Parent.GameManager)
 local CoinSpawner = require(script.Parent.CoinSpawner)
 local SpeedShop = require(script.Parent.SpeedShop)
+local SpeedController = require(script.Parent.SpeedController)
 
+-- Pass debug mode to modules that need it
 GameManager.start()
-CoinSpawner.start()
+CoinSpawner.start(DEBUG_MODE)
 SpeedShop.start()
+SpeedController.start()

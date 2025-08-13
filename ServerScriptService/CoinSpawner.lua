@@ -7,6 +7,7 @@ local SPAWN_RATE = 2
 local MAX_COINS = 20
 local SPAWN_AREA_SIZE = 100
 local coins = {}
+local debugMode = false
 
 function CoinSpawner.createCoin(position, coinType)
     coinType = coinType or "yellow"
@@ -45,6 +46,11 @@ function CoinSpawner.createCoin(position, coinType)
         coin.BrickColor = BrickColor.new("Bright yellow")
         coinValue = 1
         lightColor = Color3.fromRGB(255, 215, 0)
+    end
+    
+    -- Apply debug mode multiplier
+    if debugMode then
+        coinValue = coinValue * 4
     end
     
     local coinValueData = Instance.new("IntValue")
@@ -153,7 +159,13 @@ function CoinSpawner.spawnCoin()
     end
 end
 
-function CoinSpawner.start()
+function CoinSpawner.start(debug)
+    debugMode = debug or false
+    
+    if debugMode then
+        print("DEBUG MODE ENABLED - Orb values are 4x normal!")
+    end
+    
     spawn(function()
         while true do
             CoinSpawner.spawnCoin()

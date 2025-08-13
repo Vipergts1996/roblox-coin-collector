@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local SpeedController = require(script.Parent.SpeedController)
 
 local SpeedShop = {}
 
@@ -46,10 +47,13 @@ function SpeedShop.updatePlayerStats(player, humanoid)
     local newSpeed = 16 + ((speedLevel.Value - 1) * 4)
     local newJumpPower = 50 + ((jumpLevel.Value - 1) * 20)
     
-    humanoid.WalkSpeed = newSpeed
+    -- Let SpeedController handle progressive speed, we just update jump
     humanoid.JumpPower = newJumpPower
     
-    print(player.Name .. " stats updated - Speed: " .. newSpeed .. ", Jump: " .. newJumpPower)
+    -- Update the SpeedController with new max speed
+    SpeedController.updateMaxSpeed(player)
+    
+    print(player.Name .. " stats updated - Max Speed: " .. newSpeed .. ", Jump: " .. newJumpPower)
 end
 
 function SpeedShop.purchaseSpeedUpgrade(player)
