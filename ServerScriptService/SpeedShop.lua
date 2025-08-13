@@ -45,15 +45,15 @@ function SpeedShop.updatePlayerStats(player, humanoid)
     if not speedLevel or not jumpLevel then return end
     
     local newSpeed = 16 + ((speedLevel.Value - 1) * 4)
-    local newJumpPower = 50 + ((jumpLevel.Value - 1) * 20)
+    local newJumpHeight = 7.2 + ((jumpLevel.Value - 1) * 2) -- JumpHeight uses different scaling
     
     -- Let SpeedController handle progressive speed, we just update jump
-    humanoid.JumpPower = newJumpPower
+    humanoid.JumpHeight = newJumpHeight
     
     -- Update the SpeedController with new max speed
     SpeedController.updateMaxSpeed(player)
     
-    print(player.Name .. " stats updated - Max Speed: " .. newSpeed .. ", Jump: " .. newJumpPower)
+    print(player.Name .. " stats updated - Max Speed: " .. newSpeed .. ", Jump Height: " .. newJumpHeight)
 end
 
 function SpeedShop.purchaseSpeedUpgrade(player)

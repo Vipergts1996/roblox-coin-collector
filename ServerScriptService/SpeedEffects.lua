@@ -10,37 +10,42 @@ function SpeedEffects.createSpeedTrail(character)
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     if not rootPart then return nil end
     
-    -- Create attachment for trail
+    -- Create attachments for ground fire trail
     local attachment0 = Instance.new("Attachment")
     attachment0.Name = "SpeedTrailAttachment0"
-    attachment0.Position = Vector3.new(-1, -2, 0)
+    attachment0.Position = Vector3.new(-0.5, -2.9, 0) -- Ground level, left side
     attachment0.Parent = rootPart
     
     local attachment1 = Instance.new("Attachment")
     attachment1.Name = "SpeedTrailAttachment1"
-    attachment1.Position = Vector3.new(1, -2, 0)
+    attachment1.Position = Vector3.new(0.5, -2.9, 0) -- Ground level, right side
     attachment1.Parent = rootPart
     
-    -- Create speed trail
+    -- Create continuous ground fire trail
     local trail = Instance.new("Trail")
     trail.Name = "SpeedTrail"
     trail.Attachment0 = attachment0
     trail.Attachment1 = attachment1
-    trail.Lifetime = 0.5
-    trail.MinLength = 0
+    trail.Lifetime = 2.0 -- Much longer lasting ground fire
+    trail.MinLength = 2 -- Minimum segment length to prevent gaps
+    trail.LightEmission = 1 -- Full glow like fire
+    trail.LightInfluence = 0 -- Ignore environmental lighting
     trail.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.3),
-        NumberSequenceKeypoint.new(0.5, 0.7),
-        NumberSequenceKeypoint.new(1, 1)
+        NumberSequenceKeypoint.new(0, 0.1),  -- Very visible fire
+        NumberSequenceKeypoint.new(0.4, 0.3), -- Stay bright
+        NumberSequenceKeypoint.new(0.8, 0.7), -- Fade to embers
+        NumberSequenceKeypoint.new(1, 1)     -- Disappear
     })
     trail.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 0)),  -- Yellow
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 150, 0)), -- Orange
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))      -- Red
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 200)),   -- White hot center
+        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 180, 80)),  -- Yellow flames
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 120, 40)),  -- Orange flames
+        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(200, 60, 20)),   -- Deep orange
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 30, 10))      -- Dark red embers
     })
     trail.WidthScale = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 1),
-        NumberSequenceKeypoint.new(1, 0)
+        NumberSequenceKeypoint.new(0, 1.0),   -- Consistent width
+        NumberSequenceKeypoint.new(1, 0.8)    -- Slight taper to embers
     })
     trail.Enabled = false
     trail.Parent = rootPart
@@ -58,26 +63,28 @@ function SpeedEffects.createSpeedParticles(character)
     attachment.Position = Vector3.new(0, -1, 0)
     attachment.Parent = rootPart
     
-    -- Speed lines particle effect
+    -- Realistic speed particles (dust/debris)
     local particles = Instance.new("ParticleEmitter")
     particles.Name = "SpeedParticles"
-    particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
-    particles.Lifetime = NumberRange.new(0.3, 0.6)
-    particles.Rate = 50
-    particles.SpreadAngle = Vector2.new(45, 45)
-    particles.Speed = NumberRange.new(20, 30)
-    particles.Acceleration = Vector3.new(0, -10, 0)
+    particles.Texture = "rbxasset://textures/particles/smoke_main.dds" -- Use dust texture
+    particles.Lifetime = NumberRange.new(0.4, 0.8)
+    particles.Rate = 25 -- Fewer particles
+    particles.SpreadAngle = Vector2.new(30, 15) -- More directional
+    particles.Speed = NumberRange.new(10, 20) -- Slower, more realistic
+    particles.Acceleration = Vector3.new(0, -5, 0) -- Gentle fall
     particles.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 100)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 200, 0))
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 200, 210)), -- Light dust color
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 160, 170))  -- Darker dust
     })
     particles.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.2),
+        NumberSequenceKeypoint.new(0, 0.6), -- Start quite transparent
+        NumberSequenceKeypoint.new(0.7, 0.9),
         NumberSequenceKeypoint.new(1, 1)
     })
     particles.Size = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.5),
-        NumberSequenceKeypoint.new(1, 0.1)
+        NumberSequenceKeypoint.new(0, 0.3), -- Smaller particles
+        NumberSequenceKeypoint.new(0.5, 0.8),
+        NumberSequenceKeypoint.new(1, 0.2)
     })
     particles.Enabled = false
     particles.Parent = attachment

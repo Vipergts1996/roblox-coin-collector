@@ -10,32 +10,46 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "UpgradeButtons"
 screenGui.Parent = playerGui
 
--- Speedometer at top of screen
+-- Realistic tachometer at top of screen
 local speedometer = Instance.new("Frame")
 speedometer.Name = "Speedometer"
-speedometer.Size = UDim2.new(0, 255, 0, 255)
-speedometer.Position = UDim2.new(0.5, -127.5, 0, -10)
-speedometer.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-speedometer.BorderSizePixel = 0
+speedometer.Size = UDim2.new(0, 280, 0, 280)
+speedometer.Position = UDim2.new(0.5, -140, 0, -10)
+speedometer.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark metallic outer ring
+speedometer.BorderSizePixel = 3
+speedometer.BorderColor3 = Color3.fromRGB(100, 100, 100) -- Metallic silver border
 speedometer.Parent = screenGui
 
 local speedometerCorner = Instance.new("UICorner")
 speedometerCorner.CornerRadius = UDim.new(0.5, 0)
 speedometerCorner.Parent = speedometer
 
--- Inner speedometer circle (darker)
+-- Middle bezel ring
+local speedometerBezel = Instance.new("Frame")
+speedometerBezel.Size = UDim2.new(0.94, 0, 0.94, 0)
+speedometerBezel.Position = UDim2.new(0.03, 0, 0.03, 0)
+speedometerBezel.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Darker bezel
+speedometerBezel.BorderSizePixel = 0
+speedometerBezel.Parent = speedometer
+
+local speedometerBezelCorner = Instance.new("UICorner")
+speedometerBezelCorner.CornerRadius = UDim.new(0.5, 0)
+speedometerBezelCorner.Parent = speedometerBezel
+
+-- Inner speedometer face (clean white)
 local speedometerInner = Instance.new("Frame")
-speedometerInner.Size = UDim2.new(0.85, 0, 0.85, 0)
-speedometerInner.Position = UDim2.new(0.075, 0, 0.075, 0)
-speedometerInner.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-speedometerInner.BorderSizePixel = 0
-speedometerInner.Parent = speedometer
+speedometerInner.Size = UDim2.new(0.88, 0, 0.88, 0)
+speedometerInner.Position = UDim2.new(0.06, 0, 0.06, 0)
+speedometerInner.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Clean white face
+speedometerInner.BorderSizePixel = 1
+speedometerInner.BorderColor3 = Color3.fromRGB(180, 180, 180)
+speedometerInner.Parent = speedometerBezel
 
 local speedometerInnerCorner = Instance.new("UICorner")
 speedometerInnerCorner.CornerRadius = UDim.new(0.5, 0)
 speedometerInnerCorner.Parent = speedometerInner
 
--- Speed numbers only (from 8pm to 6pm position, avoiding gear area)
+-- Speed numbers and tick marks (keeping original positioning)
 for i = 0, 9 do
     -- Add numbers every marking (0, 10, 20, 30, 40, 50, 60, 70, 80, 90)
     local speedValue = (i / 9) * 90
@@ -43,54 +57,111 @@ for i = 0, 9 do
     numberLabel.Size = UDim2.new(0, 30, 0, 30)
     numberLabel.BackgroundTransparency = 1
     numberLabel.Text = tostring(math.floor(speedValue))
-    numberLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+    numberLabel.TextColor3 = Color3.fromRGB(30, 30, 30) -- Dark gray for clean look
     numberLabel.TextScaled = true
     numberLabel.Font = Enum.Font.GothamBold
+    numberLabel.TextStrokeTransparency = 0.9
+    numberLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
     numberLabel.Parent = speedometerInner
     
-    -- Position numbers around the circle (rotated 10 degrees clockwise from previous position)
+    -- Position numbers around the circle (same as original)
     local numberAngle = math.rad(i * 30 - 230) -- Start from -230 degrees (8pm position)
     local radius = 0.35
     local x = 0.5 + math.cos(numberAngle) * radius
     local y = 0.5 + math.sin(numberAngle) * radius
     numberLabel.Position = UDim2.new(x, -15, y, -15)
+    
+    -- Add major tick marks at number positions
+    local majorTick = Instance.new("Frame")
+    majorTick.Size = UDim2.new(0, 3, 0, 12)
+    majorTick.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    majorTick.BorderSizePixel = 0
+    majorTick.AnchorPoint = Vector2.new(0.5, 1)
+    majorTick.Parent = speedometerInner
+    
+    local tickRadius = 0.46
+    local tickX = 0.5 + math.cos(numberAngle) * tickRadius
+    local tickY = 0.5 + math.sin(numberAngle) * tickRadius
+    majorTick.Position = UDim2.new(tickX, 0, tickY, 0)
+    majorTick.Rotation = math.deg(numberAngle) + 90
+    
+    -- Add minor tick marks between major ones
+    if i < 9 then
+        for j = 1, 2 do -- 2 minor ticks between each major tick
+            local minorTick = Instance.new("Frame")
+            minorTick.Size = UDim2.new(0, 1, 0, 6)
+            minorTick.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+            minorTick.BorderSizePixel = 0
+            minorTick.AnchorPoint = Vector2.new(0.5, 1)
+            minorTick.Parent = speedometerInner
+            
+            local minorAngle = math.rad(i * 30 + j * 10 - 230)
+            local minorTickRadius = 0.44
+            local minorTickX = 0.5 + math.cos(minorAngle) * minorTickRadius
+            local minorTickY = 0.5 + math.sin(minorAngle) * minorTickRadius
+            minorTick.Position = UDim2.new(minorTickX, 0, minorTickY, 0)
+            minorTick.Rotation = math.deg(minorAngle) + 90
+        end
+    end
 end
 
--- Speed needle with hidden bottom half - CENTERED ON GAUGE
+-- Realistic speed needle (keeping original positioning)
 local needle = Instance.new("Frame")
 needle.Name = "SpeedNeedle"
-needle.Size = UDim2.new(0, 4, 0, 110) -- Make needle even longer
-needle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Exactly center on speedometerInner
-needle.BackgroundTransparency = 1 -- Make container transparent
+needle.Size = UDim2.new(0, 3, 0, 105) -- Thinner, more elegant needle
+needle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Same center position
+needle.BackgroundTransparency = 1
 needle.BorderSizePixel = 0
-needle.AnchorPoint = Vector2.new(0.5, 0.5) -- Anchor at center so it rotates around center
+needle.AnchorPoint = Vector2.new(0.5, 0.5)
 needle.ZIndex = 3
-needle.Rotation = -320 -- Adjust starting angle to point at 0
+needle.Rotation = -320 -- Same starting angle
 needle.Parent = speedometerInner
 
--- Yellow top half of needle (hidden part that goes backward)
-local needleTop = Instance.new("Frame")
-needleTop.Size = UDim2.new(1, 0, 0.4, 0) -- Smaller yellow part
-needleTop.Position = UDim2.new(0, 0, 0, 0)
-needleTop.BackgroundColor3 = Color3.fromRGB(255, 215, 0) -- Match speedometer yellow (hidden)
-needleTop.BorderSizePixel = 0
-needleTop.Parent = needle
+-- White hidden part (blends with white background)
+local needleHidden = Instance.new("Frame")
+needleHidden.Size = UDim2.new(1, 0, 0.4, 0) -- Hidden part
+needleHidden.Position = UDim2.new(0, 0, 0, 0)
+needleHidden.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Match white background
+needleHidden.BorderSizePixel = 0
+needleHidden.Parent = needle
 
--- Red bottom half of needle (visible part that points to numbers)
-local needleBottom = Instance.new("Frame")
-needleBottom.Size = UDim2.new(1, 0, 0.6, 0) -- Larger red part (extends further)
-needleBottom.Position = UDim2.new(0, 0, 0.4, 0)
-needleBottom.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Red visible part
-needleBottom.BorderSizePixel = 0
-needleBottom.Parent = needle
+-- Needle shaft (dark metallic visible part)
+local needleShaft = Instance.new("Frame")
+needleShaft.Size = UDim2.new(1, 0, 0.45, 0) -- Visible shaft
+needleShaft.Position = UDim2.new(0, 0, 0.4, 0)
+needleShaft.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Dark metallic
+needleShaft.BorderSizePixel = 0
+needleShaft.Parent = needle
 
--- Center dot
+-- Needle tip (bright red)
+local needleTip = Instance.new("Frame")
+needleTip.Size = UDim2.new(1, 0, 0.15, 0)
+needleTip.Position = UDim2.new(0, 0, 0.85, 0)
+needleTip.BackgroundColor3 = Color3.fromRGB(220, 30, 30) -- Bright red tip
+needleTip.BorderSizePixel = 0
+needleTip.Parent = needle
+
+-- Realistic center hub
+local centerHub = Instance.new("Frame")
+centerHub.Size = UDim2.new(0, 14, 0, 14)
+centerHub.Position = UDim2.new(0.5, -7, 0.5, -7)
+centerHub.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Metallic center
+centerHub.BorderSizePixel = 2
+centerHub.BorderColor3 = Color3.fromRGB(120, 120, 120)
+centerHub.ZIndex = 4
+centerHub.Parent = speedometerInner
+
+local centerHubCorner = Instance.new("UICorner")
+centerHubCorner.CornerRadius = UDim.new(0.5, 0)
+centerHubCorner.Parent = centerHub
+
+-- Inner center dot
 local centerDot = Instance.new("Frame")
-centerDot.Size = UDim2.new(0, 10, 0, 10)
-centerDot.Position = UDim2.new(0.5, -5, 0.5, -5)
-centerDot.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+centerDot.Size = UDim2.new(0, 6, 0, 6)
+centerDot.Position = UDim2.new(0.5, -3, 0.5, -3)
+centerDot.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 centerDot.BorderSizePixel = 0
-centerDot.ZIndex = 4
+centerDot.ZIndex = 5
 centerDot.Parent = speedometerInner
 
 local centerDotCorner = Instance.new("UICorner")
