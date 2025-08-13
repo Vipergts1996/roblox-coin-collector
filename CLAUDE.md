@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Roblox coin collection game with an upgrade shop system. Players collect coins scattered around a map and spend them on speed and jump upgrades.
+This is a Roblox orb collection game with an upgrade shop system. Players collect orbs scattered around a map and spend coins on speed and jump upgrades.
 
 ## Architecture
 
 ### Core Game Loop
 1. **MainScript.lua** - Entry point that initializes all game systems
 2. **GameManager** - Handles player lifecycle and leaderstats setup
-3. **CoinSpawner** - Manages coin generation with probability-based spawning
-4. **CoinCollector** - Handles coin collection logic and player rewards
+3. **CoinSpawner** - Manages orb generation with probability-based spawning
+4. **CoinCollector** - Handles orb collection logic and player rewards
 5. **SpeedShop** - Server-side upgrade purchasing and stat management
 6. **ShopGui** - Client-side shop interface and display updates
 7. **CoinDisplay** - Real-time coin counter GUI
@@ -22,12 +22,12 @@ This is a Roblox coin collection game with an upgrade shop system. Players colle
 - **GameManager.lua, CoinSpawner.lua, CoinCollector.lua, SpeedShop.lua** must be ModuleScripts (blue icon) in ServerScriptService  
 - **ShopGui.lua, CoinDisplay.lua** must be LocalScripts (yellow icon) in StarterPlayerScripts
 
-### Coin System
-- **Yellow coins** (60% spawn rate): Worth 1 coin
-- **Green coins** (30% spawn rate): Worth 2 coins  
-- **Blue coins** (10% spawn rate): Worth 5 coins
-- Coins use invisible 12x12x12 hitboxes for collection detection
-- Each coin stores its value in a CoinValue IntValue
+### Orb System
+- **Yellow orbs** (60% spawn rate): Worth 1 coin
+- **Green orbs** (30% spawn rate): Worth 2 coins  
+- **Blue orbs** (10% spawn rate): Worth 5 coins
+- Orbs use invisible 4.2x4.2x4.2 hitboxes for collection detection
+- Each orb stores its value in a CoinValue IntValue
 
 ### Player Stats & Upgrades
 - **Speed upgrades**: Start at level 1 (16 walkspeed), +4 per level, cost: 10 + (level-1)*5 coins
@@ -41,14 +41,14 @@ This is a Roblox coin collection game with an upgrade shop system. Players colle
 - Two upgrade buttons permanently displayed at bottom center of screen
 
 ### Known Issues to Watch For
-- Coin collection can fail if hair/accessories touch coins - the code searches up parent hierarchy to find character
+- Orb collection can fail if hair/accessories touch orbs - the code searches up parent hierarchy to find character
 - Ensure proper script types in Roblox Studio or the game won't start
-- Self-touch detection prevents coins from triggering on their own parts
+- Self-touch detection prevents orbs from triggering on their own parts
 
 ## Development Notes
 
 When adding new features:
 - New upgrade types should follow the pattern in SpeedShop.lua with separate RemoteEvents
-- Coin modifications should update both CoinSpawner (creation) and CoinCollector (collection logic)
+- Orb modifications should update both CoinSpawner (creation) and CoinCollector (collection logic)
 - GUI changes require updates to both display logic and update functions in ShopGui.lua
-- Always test coin collection with different character accessories/clothing items
+- Always test orb collection with different character accessories/clothing items

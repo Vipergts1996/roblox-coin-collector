@@ -13,7 +13,7 @@ function CoinSpawner.createCoin(position, coinType)
     
     local hitbox = Instance.new("Part")
     hitbox.Name = "CoinHitbox"
-    hitbox.Size = Vector3.new(12, 12, 12)
+    hitbox.Size = Vector3.new(4.2, 4.2, 4.2)
     hitbox.Position = position
     hitbox.Anchored = true
     hitbox.CanCollide = false
@@ -23,7 +23,7 @@ function CoinSpawner.createCoin(position, coinType)
     local coin = Instance.new("Part")
     coin.Name = "CoinVisual"
     coin.Shape = Enum.PartType.Cylinder
-    coin.Size = Vector3.new(0.1, 3, 3)
+    coin.Size = Vector3.new(0.08, 2.5, 2.5)
     coin.Position = position
     coin.Anchored = false
     coin.CanCollide = false
@@ -67,7 +67,7 @@ function CoinSpawner.createCoin(position, coinType)
     local auraPart = Instance.new("Part")
     auraPart.Name = "CoinAura"
     auraPart.Shape = Enum.PartType.Ball
-    auraPart.Size = Vector3.new(5, 5, 5)
+    auraPart.Size = Vector3.new(4.2, 4.2, 4.2)
     auraPart.Position = coin.Position
     auraPart.Anchored = false
     auraPart.CanCollide = false
@@ -85,7 +85,7 @@ function CoinSpawner.createCoin(position, coinType)
     local innerGlow = Instance.new("Part")
     innerGlow.Name = "InnerGlow"
     innerGlow.Shape = Enum.PartType.Ball
-    innerGlow.Size = Vector3.new(3.5, 3.5, 3.5)
+    innerGlow.Size = Vector3.new(2.9, 2.9, 2.9)
     innerGlow.Position = coin.Position
     innerGlow.Anchored = false
     innerGlow.CanCollide = false
@@ -101,7 +101,7 @@ function CoinSpawner.createCoin(position, coinType)
     
     local spinConnection = RunService.Heartbeat:Connect(function()
         if hitbox.Parent then
-            hitbox.CFrame = hitbox.CFrame * CFrame.Angles(0, math.rad(2), 0)
+            hitbox.CFrame = hitbox.CFrame * CFrame.Angles(0, math.rad(5), 0)
         else
             spinConnection:Disconnect()
         end
@@ -129,7 +129,7 @@ end
 function CoinSpawner.getRandomPosition()
     local x = math.random(-SPAWN_AREA_SIZE, SPAWN_AREA_SIZE)
     local z = math.random(-SPAWN_AREA_SIZE, SPAWN_AREA_SIZE)
-    local y = 5
+    local y = 3
     
     return Vector3.new(x, y, z)
 end
