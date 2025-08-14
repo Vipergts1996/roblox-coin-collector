@@ -9,7 +9,7 @@ local CameraEffects = {}
 
 -- Camera settings
 local BASE_ZOOM_DISTANCE = 12 -- Default camera distance when not moving
-local SHAKE_INTENSITY = 0.25  -- Screen shake strength at max speed (50% reduced)
+local SHAKE_INTENSITY = 0.175 -- Screen shake strength at max speed (30% reduction from 0.25)
 local SHAKE_FREQUENCY = 15    -- How fast the shake oscillates
 
 -- Custom zoom distances for each gear level (when at max speed for that gear)

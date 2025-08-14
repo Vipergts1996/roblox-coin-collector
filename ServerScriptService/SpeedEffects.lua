@@ -157,12 +157,11 @@ function SpeedEffects.setupPlayerEffects(player)
         local humanoid = character:WaitForChild("Humanoid")
         local rootPart = character:WaitForChild("HumanoidRootPart")
         
-        -- Create all speed effects
+        -- Create all speed effects (removed sound)
         local effects = {
             trail = SpeedEffects.createSpeedTrail(character),
             particles = SpeedEffects.createSpeedParticles(character),
             smokeTrail = SpeedEffects.createSmokeTrail(character),
-            sound = SpeedEffects.createSpeedBoostSound(character),
             isActive = false,
             lastSpeed = 0
         }
@@ -270,11 +269,6 @@ function SpeedEffects.activateEffects(player)
         effects.smokeTrail.Enabled = true
     end
     
-    -- Play speed sound
-    if effects.sound then
-        effects.sound:Play()
-    end
-    
     print(player.Name .. " activated speed boost effects!")
 end
 
@@ -298,11 +292,6 @@ function SpeedEffects.deactivateEffects(player)
     if effects.smokeTrail then
         effects.smokeTrail.Enabled = false
     end
-    
-    -- Stop speed sound
-    if effects.sound then
-        effects.sound:Stop()
-    end
 end
 
 function SpeedEffects.updateEffectIntensity(player, speedPercent, threshold)
@@ -321,11 +310,6 @@ function SpeedEffects.updateEffectIntensity(player, speedPercent, threshold)
     -- Update smoke trail intensity
     if effects.smokeTrail then
         effects.smokeTrail.Rate = 30 + (intensity * 50) -- 30 to 80 smoke particles
-    end
-    
-    -- Update sound pitch
-    if effects.sound then
-        effects.sound.Pitch = 1.5 + (intensity * 0.5) -- 1.5 to 2.0 pitch
     end
 end
 

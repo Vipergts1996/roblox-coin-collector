@@ -49,54 +49,79 @@ local speedometerInnerCorner = Instance.new("UICorner")
 speedometerInnerCorner.CornerRadius = UDim.new(0.5, 0)
 speedometerInnerCorner.Parent = speedometerInner
 
--- Speed numbers and tick marks (keeping original positioning)
+-- Dynamic tachometer numbers that scale with gear level
+local speedNumbers = {}
+local currentMaxSpeed = 90
+
+local function createSpeedNumbers(maxSpeed, minSpeed)
+    minSpeed = minSpeed or 0 -- Default to 0 if not provided
+    
+    -- Clear existing numbers
+    for _, numberLabel in pairs(speedNumbers) do
+        if numberLabel and numberLabel.Parent then
+            numberLabel:Destroy()
+        end
+    end
+    speedNumbers = {}
+    
+    -- Create new numbers based on speed range
+    local speedRange = maxSpeed - minSpeed
+    for i = 0, 9 do
+        local speedValue = minSpeed + (i / 9) * speedRange
+        local numberLabel = Instance.new("TextLabel")
+        numberLabel.Size = UDim2.new(0, 30, 0, 30)
+        numberLabel.BackgroundTransparency = 1
+        numberLabel.Text = tostring(math.floor(speedValue))
+        numberLabel.TextColor3 = Color3.fromRGB(30, 30, 30)
+        numberLabel.TextScaled = true
+        numberLabel.Font = Enum.Font.GothamBold
+        numberLabel.TextStrokeTransparency = 0.9
+        numberLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+        numberLabel.Parent = speedometerInner
+        
+        -- Position numbers around the circle
+        local numberAngle = math.rad(i * 30 - 230)
+        local radius = 0.35
+        local x = 0.5 + math.cos(numberAngle) * radius
+        local y = 0.5 + math.sin(numberAngle) * radius
+        numberLabel.Position = UDim2.new(x, -15, y, -15)
+        
+        table.insert(speedNumbers, numberLabel)
+    end
+end
+
+-- Create clean tick marks that don't overlap numbers
 for i = 0, 9 do
-    -- Add numbers every marking (0, 10, 20, 30, 40, 50, 60, 70, 80, 90)
-    local speedValue = (i / 9) * 90
-    local numberLabel = Instance.new("TextLabel")
-    numberLabel.Size = UDim2.new(0, 30, 0, 30)
-    numberLabel.BackgroundTransparency = 1
-    numberLabel.Text = tostring(math.floor(speedValue))
-    numberLabel.TextColor3 = Color3.fromRGB(30, 30, 30) -- Dark gray for clean look
-    numberLabel.TextScaled = true
-    numberLabel.Font = Enum.Font.GothamBold
-    numberLabel.TextStrokeTransparency = 0.9
-    numberLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-    numberLabel.Parent = speedometerInner
+    local numberAngle = math.rad(i * 30 - 230)
     
-    -- Position numbers around the circle (same as original)
-    local numberAngle = math.rad(i * 30 - 230) -- Start from -230 degrees (8pm position)
-    local radius = 0.35
-    local x = 0.5 + math.cos(numberAngle) * radius
-    local y = 0.5 + math.sin(numberAngle) * radius
-    numberLabel.Position = UDim2.new(x, -15, y, -15)
-    
-    -- Add major tick marks at number positions
+    -- Major tick marks - shorter and positioned away from numbers
     local majorTick = Instance.new("Frame")
-    majorTick.Size = UDim2.new(0, 3, 0, 12)
+    majorTick.Size = UDim2.new(0, 2, 0, 8) -- Much shorter
     majorTick.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     majorTick.BorderSizePixel = 0
     majorTick.AnchorPoint = Vector2.new(0.5, 1)
     majorTick.Parent = speedometerInner
     
-    local tickRadius = 0.46
+    -- Position closer to edge, away from numbers
+    local tickRadius = 0.48
     local tickX = 0.5 + math.cos(numberAngle) * tickRadius
     local tickY = 0.5 + math.sin(numberAngle) * tickRadius
     majorTick.Position = UDim2.new(tickX, 0, tickY, 0)
     majorTick.Rotation = math.deg(numberAngle) + 90
     
-    -- Add minor tick marks between major ones
+    -- Minor tick marks between major ones
     if i < 9 then
-        for j = 1, 2 do -- 2 minor ticks between each major tick
+        for j = 1, 2 do
+            local minorAngle = math.rad(i * 30 + j * 10 - 230)
+            
             local minorTick = Instance.new("Frame")
-            minorTick.Size = UDim2.new(0, 1, 0, 6)
+            minorTick.Size = UDim2.new(0, 1, 0, 4) -- Very short minor ticks
             minorTick.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
             minorTick.BorderSizePixel = 0
             minorTick.AnchorPoint = Vector2.new(0.5, 1)
             minorTick.Parent = speedometerInner
             
-            local minorAngle = math.rad(i * 30 + j * 10 - 230)
-            local minorTickRadius = 0.44
+            local minorTickRadius = 0.47
             local minorTickX = 0.5 + math.cos(minorAngle) * minorTickRadius
             local minorTickY = 0.5 + math.sin(minorAngle) * minorTickRadius
             minorTick.Position = UDim2.new(minorTickX, 0, minorTickY, 0)
@@ -104,6 +129,9 @@ for i = 0, 9 do
         end
     end
 end
+
+-- Initialize with starting numbers
+createSpeedNumbers(90)
 
 -- Realistic speed needle (keeping original positioning)
 local needle = Instance.new("Frame")
@@ -117,29 +145,29 @@ needle.ZIndex = 3
 needle.Rotation = -320 -- Same starting angle
 needle.Parent = speedometerInner
 
--- White hidden part (blends with white background)
-local needleHidden = Instance.new("Frame")
-needleHidden.Size = UDim2.new(1, 0, 0.4, 0) -- Hidden part
-needleHidden.Position = UDim2.new(0, 0, 0, 0)
-needleHidden.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Match white background
-needleHidden.BorderSizePixel = 0
-needleHidden.Parent = needle
+-- White pointing side (entire half that reads the numbers)
+local needleWhiteSide = Instance.new("Frame")
+needleWhiteSide.Size = UDim2.new(1, 0, 0.6, 0) -- Large white pointing section
+needleWhiteSide.Position = UDim2.new(0, 0, 0, 0)
+needleWhiteSide.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Match gauge face exactly
+needleWhiteSide.BorderSizePixel = 0
+needleWhiteSide.Parent = needle
 
--- Needle shaft (dark metallic visible part)
+-- Needle shaft (small dark center section)
 local needleShaft = Instance.new("Frame")
-needleShaft.Size = UDim2.new(1, 0, 0.45, 0) -- Visible shaft
-needleShaft.Position = UDim2.new(0, 0, 0.4, 0)
+needleShaft.Size = UDim2.new(1, 0, 0.25, 0) -- Smaller center section
+needleShaft.Position = UDim2.new(0, 0, 0.6, 0)
 needleShaft.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Dark metallic
 needleShaft.BorderSizePixel = 0
 needleShaft.Parent = needle
 
--- Needle tip (bright red)
-local needleTip = Instance.new("Frame")
-needleTip.Size = UDim2.new(1, 0, 0.15, 0)
-needleTip.Position = UDim2.new(0, 0, 0.85, 0)
-needleTip.BackgroundColor3 = Color3.fromRGB(220, 30, 30) -- Bright red tip
-needleTip.BorderSizePixel = 0
-needleTip.Parent = needle
+-- Needle base (red back section)
+local needleBase = Instance.new("Frame")
+needleBase.Size = UDim2.new(1, 0, 0.15, 0)
+needleBase.Position = UDim2.new(0, 0, 0.85, 0)
+needleBase.BackgroundColor3 = Color3.fromRGB(220, 50, 50) -- Red base
+needleBase.BorderSizePixel = 0
+needleBase.Parent = needle
 
 -- Realistic center hub
 local centerHub = Instance.new("Frame")
@@ -294,15 +322,37 @@ spawn(function()
             end
         end
         
-        -- Map actual speed to gauge positions (gauge shows 0-90, we use speed 0-20)
-        local maxDisplaySpeed = 90  -- Max on the gauge
-        local speedProgress = math.min(actualSpeed / maxDisplaySpeed, 1)
+        -- Get current gear level to determine tachometer scale
+        local gearLevel = 1
+        local leaderstats = player:FindFirstChild("leaderstats")
+        if leaderstats and leaderstats:FindFirstChild("SpeedLevel") then
+            gearLevel = leaderstats.SpeedLevel.Value
+        end
         
-        -- Calculate needle angle to match the gauge numbers
-        -- The gauge spans 270 degrees from 0 to 90
-        -- Speed 0 should point at "0", speed 16 should point at "10" area  
-        local startAngle = -320  -- Adjust to point at actual 0 position
-        local sweepRange = 270   -- Total degrees to sweep (0 to 90 on gauge)
+        -- Calculate tachometer range based on gear level
+        local playerMaxSpeed = 16 + ((gearLevel - 1) * 4) -- Player's actual max speed
+        
+        -- Every 20 gears, increase the minimum speed (first tick)
+        local gearTier = math.floor((gearLevel - 1) / 20)
+        local minDisplaySpeed = gearTier * playerMaxSpeed * 0.3 -- 30% of max speed as minimum
+        minDisplaySpeed = math.floor(minDisplaySpeed / 10) * 10 -- Round down to nearest 10
+        
+        local maxDisplaySpeed = math.max(90, math.ceil(playerMaxSpeed / 10) * 10) -- Round up to nearest 10
+        local speedRange = maxDisplaySpeed - minDisplaySpeed
+        
+        -- Update tachometer numbers if range changed
+        if maxDisplaySpeed ~= currentMaxSpeed then
+            currentMaxSpeed = maxDisplaySpeed
+            createSpeedNumbers(maxDisplaySpeed, minDisplaySpeed)
+        end
+        
+        -- Map actual speed to current gauge scale (considering minimum)
+        local adjustedSpeed = math.max(0, actualSpeed - minDisplaySpeed)
+        local speedProgress = math.min(adjustedSpeed / speedRange, 1)
+        
+        -- Calculate needle angle to match the current gauge numbers
+        local startAngle = -320  -- Same starting position
+        local sweepRange = 270   -- Same sweep range
         local needleAngle = startAngle + (speedProgress * sweepRange)
         
         -- Update needle with smooth tween animation

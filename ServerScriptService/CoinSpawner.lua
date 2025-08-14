@@ -1,5 +1,6 @@
 local CoinCollector = require(script.Parent.CoinCollector)
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local CoinSpawner = {}
 
@@ -105,9 +106,11 @@ function CoinSpawner.createCoin(position, coinType)
     innerWeld.Part1 = innerGlow
     innerWeld.Parent = hitbox
     
-    local spinConnection = RunService.Heartbeat:Connect(function()
+    -- Smooth spinning using RunService with smaller increments
+    local spinConnection = RunService.Heartbeat:Connect(function(deltaTime)
         if hitbox.Parent then
-            hitbox.CFrame = hitbox.CFrame * CFrame.Angles(0, math.rad(5), 0)
+            -- 2x faster: 4 degrees per frame for smooth fast spinning
+            hitbox.CFrame = hitbox.CFrame * CFrame.Angles(0, math.rad(4), 0)
         else
             spinConnection:Disconnect()
         end
