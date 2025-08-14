@@ -384,6 +384,42 @@ local jumpFillCorner = Instance.new("UICorner")
 jumpFillCorner.CornerRadius = UDim.new(0, 8)
 jumpFillCorner.Parent = jumpFill
 
+-- Pet Shop Button
+local petShopButton = Instance.new("TextButton")
+petShopButton.Name = "PetShopButton"
+petShopButton.Size = UDim2.new(0, 120, 0, 50)
+petShopButton.Position = UDim2.new(0, 20, 1, -140)
+petShopButton.BackgroundColor3 = Color3.fromRGB(120, 60, 200)
+petShopButton.BorderSizePixel = 0
+petShopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+petShopButton.TextScaled = true
+petShopButton.Font = Enum.Font.FredokaOne
+petShopButton.Text = "🥚 Egg Shop"
+petShopButton.ZIndex = 1
+petShopButton.Parent = screenGui
+
+local petShopCorner = Instance.new("UICorner")
+petShopCorner.CornerRadius = UDim.new(0, 8)
+petShopCorner.Parent = petShopButton
+
+-- Pet Inventory Button
+local petInventoryButton = Instance.new("TextButton")
+petInventoryButton.Name = "PetInventoryButton"
+petInventoryButton.Size = UDim2.new(0, 120, 0, 50)
+petInventoryButton.Position = UDim2.new(0, 150, 1, -140)
+petInventoryButton.BackgroundColor3 = Color3.fromRGB(200, 120, 60)
+petInventoryButton.BorderSizePixel = 0
+petInventoryButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+petInventoryButton.TextScaled = true
+petInventoryButton.Font = Enum.Font.FredokaOne
+petInventoryButton.Text = "🐾 My Pets"
+petInventoryButton.ZIndex = 1
+petInventoryButton.Parent = screenGui
+
+local petInventoryCorner = Instance.new("UICorner")
+petInventoryCorner.CornerRadius = UDim.new(0, 8)
+petInventoryCorner.Parent = petInventoryButton
+
 local function updateButtonDisplay()
     local leaderstats = player:FindFirstChild("leaderstats")
     if not leaderstats then return end
@@ -495,4 +531,68 @@ if player:FindFirstChild("leaderstats") then
         updateButtonDisplay()
     end
 end
+
+-- Pet button click handlers - connect to the other GUI scripts
+spawn(function()
+    -- Wait for the pet GUI scripts to load
+    wait(3)
+    
+    petShopButton.MouseButton1Click:Connect(function()
+        -- Use UserInputService to simulate E key press for egg shop
+        local UserInputService = game:GetService("UserInputService")
+        local eggShopToggle = game:GetService("ContextActionService")
+        
+        -- Try to find the EggShopGui module and call its toggle function
+        local success, result = pcall(function()
+            local eggShopGui = playerGui:FindFirstChild("EggShopGui")
+            if eggShopGui and eggShopGui:FindFirstChild("ShopFrame") then
+                local shopFrame = eggShopGui.ShopFrame
+                shopFrame.Visible = not shopFrame.Visible
+                
+                if shopFrame.Visible then
+                    print("Opening Egg Shop via button...")
+                    -- Manually refresh the shop display
+                    spawn(function()
+                        wait(0.1)
+                        local leaderstats = player:FindFirstChild("leaderstats")
+                        if leaderstats and leaderstats:FindFirstChild("Coins") then
+                            local coinsLabel = shopFrame:FindFirstChild("Frame") and shopFrame.Frame:FindFirstChild("TextLabel")
+                            if coinsLabel then
+                                coinsLabel.Text = "💰 " .. leaderstats.Coins.Value .. " Coins"
+                            end
+                        end
+                    end)
+                end
+            end
+        end)
+        
+        if not success then
+            print("Error opening egg shop:", result)
+        end
+    end)
+    
+    petInventoryButton.MouseButton1Click:Connect(function()
+        -- Try to find the PetInventoryGui and call its toggle function
+        local success, result = pcall(function()
+            local petInventoryGui = playerGui:FindFirstChild("PetInventoryGui")
+            if petInventoryGui and petInventoryGui:FindFirstChild("InventoryFrame") then
+                local inventoryFrame = petInventoryGui.InventoryFrame
+                inventoryFrame.Visible = not inventoryFrame.Visible
+                
+                if inventoryFrame.Visible then
+                    print("Opening Pet Inventory via button...")
+                    -- Request pet data from server
+                    local getPetDataEvent = ReplicatedStorage:FindFirstChild("GetPetData")
+                    if getPetDataEvent then
+                        getPetDataEvent:FireServer()
+                    end
+                end
+            end
+        end)
+        
+        if not success then
+            print("Error opening pet inventory:", result)
+        end
+    end)
+end)
 
