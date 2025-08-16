@@ -29,9 +29,24 @@ getTrailDataEvent.Parent = ReplicatedStorage
 print("TrailManager: Created GetTrailData RemoteEvent")
 
 function TrailManager.loadPlayerData(player)
-    local success, data = pcall(function()
-        return trailDataStore:GetAsync("Player_" .. player.UserId)
-    end)
+    local attempts = 0
+    local maxAttempts = 3
+    local success, data
+    
+    -- Retry logic for DataStore failures
+    repeat
+        attempts = attempts + 1
+        success, data = pcall(function()
+            return trailDataStore:GetAsync("Player_" .. player.UserId)
+        end)
+        
+        if not success then
+            warn("TrailManager: Failed to load data for " .. player.Name .. " (attempt " .. attempts .. "): " .. tostring(data))
+            if attempts < maxAttempts then
+                wait(1 * attempts) -- Exponential backoff
+            end
+        end
+    until success or attempts >= maxAttempts
     
     if success and data then
         playerTrailData[player] = data
@@ -40,8 +55,10 @@ function TrailManager.loadPlayerData(player)
             local trailInfo = TrailData.Trails[data.equipped]
             data.coinMultiplier = trailInfo and trailInfo.coinMultiplier or 1.0
         end
+        print("TrailManager: Successfully loaded data for " .. player.Name)
     else
-        -- Default data for new players
+        -- Default data for new players or when DataStore fails
+        warn("TrailManager: Using default data for " .. player.Name .. " (DataStore failed after " .. maxAttempts .. " attempts)")
         playerTrailData[player] = {
             trails = {["Orange Fire"] = true}, -- Default trail unlocked
             equipped = "Orange Fire",
@@ -56,12 +73,29 @@ end
 function TrailManager.savePlayerData(player)
     if not playerTrailData[player] then return end
     
-    local success, err = pcall(function()
-        trailDataStore:SetAsync("Player_" .. player.UserId, playerTrailData[player])
-    end)
+    local attempts = 0
+    local maxAttempts = 3
+    local success, err
     
-    if not success then
-        warn("Failed to save trail data for " .. player.Name .. ": " .. err)
+    -- Retry logic for DataStore failures
+    repeat
+        attempts = attempts + 1
+        success, err = pcall(function()
+            trailDataStore:SetAsync("Player_" .. player.UserId, playerTrailData[player])
+        end)
+        
+        if not success then
+            warn("TrailManager: Failed to save data for " .. player.Name .. " (attempt " .. attempts .. "): " .. tostring(err))
+            if attempts < maxAttempts then
+                wait(1 * attempts) -- Exponential backoff
+            end
+        end
+    until success or attempts >= maxAttempts
+    
+    if success then
+        print("TrailManager: Successfully saved data for " .. player.Name)
+    else
+        warn("TrailManager: Failed to save data for " .. player.Name .. " after " .. maxAttempts .. " attempts")
     end
 end
 

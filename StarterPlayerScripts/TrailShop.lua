@@ -79,8 +79,8 @@ function TrailShop.createGui()
     
     -- Close button - autoscales with screen size
     local closeButton = Instance.new("TextButton")
-    closeButton.Size = UDim2.new(0, 0, 0.8, 0) -- Height 80% of title, width set by aspect ratio
-    closeButton.Position = UDim2.new(1, 0, 0.1, 0) -- Top right with small margin
+    closeButton.Size = UDim2.new(0.12, 0, 0.8, 0) -- 12% width, 80% height of title
+    closeButton.Position = UDim2.new(0.98, 0, 0.1, 0) -- Top right with small margin
     closeButton.AnchorPoint = Vector2.new(1, 0)
     closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
     closeButton.BorderSizePixel = 0

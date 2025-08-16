@@ -10,15 +10,27 @@
     screenGui.Name = "UpgradeButtons"
     screenGui.Parent = playerGui
 
-    -- Realistic tachometer at top of screen
+    -- Realistic tachometer at bottom right of screen - now properly scaling
     local speedometer = Instance.new("Frame")
     speedometer.Name = "Speedometer"
-    speedometer.Size = UDim2.new(0, 280, 0, 280)
-    speedometer.Position = UDim2.new(0.5, -140, 0, -10)
+    speedometer.Size = UDim2.new(0.25, 0, 0.25, 0) -- 25% of screen width and height
+    speedometer.Position = UDim2.new(0.98, 0, 0.98, 0) -- Bottom right corner
+    speedometer.AnchorPoint = Vector2.new(1, 1) -- Anchor to bottom right
     speedometer.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark metallic outer ring
-    speedometer.BorderSizePixel = 3
+    speedometer.BorderSizePixel = 0 -- Remove fixed border
     speedometer.BorderColor3 = Color3.fromRGB(100, 100, 100) -- Metallic silver border
     speedometer.Parent = screenGui
+    
+    -- Add UIAspectRatioConstraint like trail shop close button
+    local speedometerAspect = Instance.new("UIAspectRatioConstraint")
+    speedometerAspect.AspectRatio = 1.0 -- Perfect square
+    speedometerAspect.Parent = speedometer
+    
+    -- Add size constraint to prevent speedometer from being too small on mobile
+    local speedometerSizeConstraint = Instance.new("UISizeConstraint")
+    speedometerSizeConstraint.MinSize = Vector2.new(150, 150) -- Minimum readable size
+    speedometerSizeConstraint.MaxSize = Vector2.new(400, 400) -- Maximum size for large screens
+    speedometerSizeConstraint.Parent = speedometer
 
     local speedometerCorner = Instance.new("UICorner")
     speedometerCorner.CornerRadius = UDim.new(0.5, 0)
@@ -69,7 +81,7 @@
         for i = 0, 9 do
             local speedValue = minSpeed + (i / 9) * speedRange
             local numberLabel = Instance.new("TextLabel")
-            numberLabel.Size = UDim2.new(0, 30, 0, 30)
+            numberLabel.Size = UDim2.new(0.12, 0, 0.12, 0) -- 12% of speedometer size
             numberLabel.BackgroundTransparency = 1
             numberLabel.Text = tostring(math.floor(speedValue))
             numberLabel.TextColor3 = Color3.fromRGB(30, 30, 30)
@@ -79,12 +91,13 @@
             numberLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
             numberLabel.Parent = speedometerInner
             
-            -- Position numbers around the circle
+            -- Position numbers around the circle with proper anchoring
             local numberAngle = math.rad(i * 30 - 230)
             local radius = 0.35
             local x = 0.5 + math.cos(numberAngle) * radius
             local y = 0.5 + math.sin(numberAngle) * radius
-            numberLabel.Position = UDim2.new(x, -15, y, -15)
+            numberLabel.Position = UDim2.new(x, 0, y, 0)
+            numberLabel.AnchorPoint = Vector2.new(0.5, 0.5) -- Center the labels
             
             table.insert(speedNumbers, numberLabel)
         end
@@ -94,9 +107,9 @@
     for i = 0, 9 do
         local numberAngle = math.rad(i * 30 - 230)
         
-        -- Major tick marks - shorter and positioned away from numbers
+        -- Major tick marks - now scaling properly
         local majorTick = Instance.new("Frame")
-        majorTick.Size = UDim2.new(0, 2, 0, 8) -- Much shorter
+        majorTick.Size = UDim2.new(0.01, 0, 0.04, 0) -- 1% width, 4% height of speedometer
         majorTick.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
         majorTick.BorderSizePixel = 0
         majorTick.AnchorPoint = Vector2.new(0.5, 1)
@@ -115,7 +128,7 @@
                 local minorAngle = math.rad(i * 30 + j * 10 - 230)
                 
                 local minorTick = Instance.new("Frame")
-                minorTick.Size = UDim2.new(0, 1, 0, 4) -- Very short minor ticks
+                minorTick.Size = UDim2.new(0.005, 0, 0.02, 0) -- 0.5% width, 2% height of speedometer
                 minorTick.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
                 minorTick.BorderSizePixel = 0
                 minorTick.AnchorPoint = Vector2.new(0.5, 1)
@@ -133,16 +146,16 @@
     -- Initialize with starting numbers
     createSpeedNumbers(90)
 
-    -- Realistic speed needle (keeping original positioning)
+    -- Realistic speed needle - now scaling properly with correct length
     local needle = Instance.new("Frame")
     needle.Name = "SpeedNeedle"
-    needle.Size = UDim2.new(0, 3, 0, 105) -- Thinner, more elegant needle
-    needle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Same center position
+    needle.Size = UDim2.new(0.015, 0, 0.45, 0) -- Proper width and shorter: 1.5% width, 45% height
+    needle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center position
     needle.BackgroundTransparency = 1
     needle.BorderSizePixel = 0
     needle.AnchorPoint = Vector2.new(0.5, 0.5)
     needle.ZIndex = 3
-    needle.Rotation = -320 -- Same starting angle
+    needle.Rotation = -320 -- Starting angle
     needle.Parent = speedometerInner
 
     -- White pointing side (entire half that reads the numbers)
@@ -169,12 +182,13 @@
     needleBase.BorderSizePixel = 0
     needleBase.Parent = needle
 
-    -- Realistic center hub
+    -- Realistic center hub - now scaling properly
     local centerHub = Instance.new("Frame")
-    centerHub.Size = UDim2.new(0, 14, 0, 14)
-    centerHub.Position = UDim2.new(0.5, -7, 0.5, -7)
+    centerHub.Size = UDim2.new(0.08, 0, 0.08, 0) -- 8% of speedometer size
+    centerHub.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center position
+    centerHub.AnchorPoint = Vector2.new(0.5, 0.5) -- Perfect center
     centerHub.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Metallic center
-    centerHub.BorderSizePixel = 2
+    centerHub.BorderSizePixel = 0 -- Remove fixed border
     centerHub.BorderColor3 = Color3.fromRGB(120, 120, 120)
     centerHub.ZIndex = 4
     centerHub.Parent = speedometerInner
@@ -183,10 +197,11 @@
     centerHubCorner.CornerRadius = UDim.new(0.5, 0)
     centerHubCorner.Parent = centerHub
 
-    -- Inner center dot
+    -- Inner center dot - now scaling properly
     local centerDot = Instance.new("Frame")
-    centerDot.Size = UDim2.new(0, 6, 0, 6)
-    centerDot.Position = UDim2.new(0.5, -3, 0.5, -3)
+    centerDot.Size = UDim2.new(0.04, 0, 0.04, 0) -- 4% of speedometer size
+    centerDot.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center position
+    centerDot.AnchorPoint = Vector2.new(0.5, 0.5) -- Perfect center
     centerDot.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     centerDot.BorderSizePixel = 0
     centerDot.ZIndex = 5
@@ -197,17 +212,18 @@
     centerDotCorner.Parent = centerDot
 
 
-    -- Gear display (7-segment style)
+    -- Gear display - now scaling properly and shifted right to avoid number overlap
     local gearFrame = Instance.new("Frame")
-    gearFrame.Size = UDim2.new(0, 68, 0, 51)
-    gearFrame.Position = UDim2.new(0.5, -34, 0.7, 0)
+    gearFrame.Size = UDim2.new(0.35, 0, 0.2, 0) -- 35% width, 20% height of speedometer
+    gearFrame.Position = UDim2.new(0.52, 0, 0.7, 0) -- Shifted 2% right from center
+    gearFrame.AnchorPoint = Vector2.new(0.5, 0) -- Center horizontally
     gearFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    gearFrame.BorderSizePixel = 2
+    gearFrame.BorderSizePixel = 0 -- Remove fixed border
     gearFrame.BorderColor3 = Color3.fromRGB(100, 100, 100)
     gearFrame.Parent = speedometerInner
 
     local gearCorner = Instance.new("UICorner")
-    gearCorner.CornerRadius = UDim.new(0, 5)
+    gearCorner.CornerRadius = UDim.new(0.1, 0) -- 10% radius for proportional corners
     gearCorner.Parent = gearFrame
 
     -- Gear label
@@ -233,11 +249,68 @@
     gearNumber.Font = Enum.Font.Code
     gearNumber.Parent = gearFrame
 
-    -- Speed Upgrade Button
+    -- Nitro Bar - positioned above speedometer
+    local nitroBarFrame = Instance.new("Frame")
+    nitroBarFrame.Name = "NitroBarFrame"
+    nitroBarFrame.Size = UDim2.new(0.3, 0, 0.05, 0) -- 30% width, 5% height
+    nitroBarFrame.Position = UDim2.new(0.98, 0, 0.68, 0) -- Above speedometer
+    nitroBarFrame.AnchorPoint = Vector2.new(1, 1)
+    nitroBarFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Dark background
+    nitroBarFrame.BorderSizePixel = 0
+    nitroBarFrame.Parent = screenGui
+    
+    local nitroBarCorner = Instance.new("UICorner")
+    nitroBarCorner.CornerRadius = UDim.new(0.2, 0)
+    nitroBarCorner.Parent = nitroBarFrame
+    
+    local nitroBarBorder = Instance.new("UIStroke")
+    nitroBarBorder.Thickness = 2
+    nitroBarBorder.Color = Color3.fromRGB(100, 100, 100)
+    nitroBarBorder.Parent = nitroBarFrame
+    
+    -- Nitro fill bar
+    local nitroFillBar = Instance.new("Frame")
+    nitroFillBar.Name = "NitroFill"
+    nitroFillBar.Size = UDim2.new(1, 0, 1, 0) -- Start full
+    nitroFillBar.Position = UDim2.new(0, 0, 0, 0)
+    nitroFillBar.BackgroundColor3 = Color3.fromRGB(0, 150, 255) -- Blue nitro color
+    nitroFillBar.BorderSizePixel = 0
+    nitroFillBar.Parent = nitroBarFrame
+    
+    local nitroFillCorner = Instance.new("UICorner")
+    nitroFillCorner.CornerRadius = UDim.new(0.2, 0)
+    nitroFillCorner.Parent = nitroFillBar
+    
+    -- Nitro label
+    local nitroLabel = Instance.new("TextLabel")
+    nitroLabel.Size = UDim2.new(1, 0, 1, 0)
+    nitroLabel.Position = UDim2.new(0, 0, 0, 0)
+    nitroLabel.BackgroundTransparency = 1
+    nitroLabel.Text = "NITRO"
+    nitroLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nitroLabel.TextScaled = true
+    nitroLabel.Font = Enum.Font.GothamBold
+    nitroLabel.ZIndex = 2
+    nitroLabel.Parent = nitroBarFrame
+    
+    -- Nitro instruction label
+    local nitroInstructionLabel = Instance.new("TextLabel")
+    nitroInstructionLabel.Size = UDim2.new(0.25, 0, 0.03, 0)
+    nitroInstructionLabel.Position = UDim2.new(0.98, 0, 0.63, 0)
+    nitroInstructionLabel.AnchorPoint = Vector2.new(1, 1)
+    nitroInstructionLabel.BackgroundTransparency = 1
+    nitroInstructionLabel.Text = "Hold SHIFT to boost"
+    nitroInstructionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    nitroInstructionLabel.TextScaled = true
+    nitroInstructionLabel.Font = Enum.Font.Gotham
+    nitroInstructionLabel.Parent = screenGui
+
+    -- Speed Upgrade Button - now properly scaling and closer together
     local speedButton = Instance.new("TextButton")
     speedButton.Name = "SpeedButton"
-    speedButton.Size = UDim2.new(0, 150, 0, 60)
-    speedButton.Position = UDim2.new(0.5, -160, 1, -80)
+    speedButton.Size = UDim2.new(0.18, 0, 0.08, 0) -- 18% width, 8% height like trail shop
+    speedButton.Position = UDim2.new(0.4, 0, 0.92, 0) -- Moved closer to center
+    speedButton.AnchorPoint = Vector2.new(0.5, 1) -- Center anchor like trail shop
     speedButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
     speedButton.BorderSizePixel = 0
     speedButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -278,11 +351,12 @@
     speedFillCorner.CornerRadius = UDim.new(0, 8)
     speedFillCorner.Parent = speedFill
 
-    -- Jump Upgrade Button
+    -- Jump Upgrade Button - now properly scaling and closer together
     local jumpButton = Instance.new("TextButton")
     jumpButton.Name = "JumpButton"
-    jumpButton.Size = UDim2.new(0, 150, 0, 60)
-    jumpButton.Position = UDim2.new(0.5, 10, 1, -80)
+    jumpButton.Size = UDim2.new(0.18, 0, 0.08, 0) -- 18% width, 8% height like trail shop
+    jumpButton.Position = UDim2.new(0.6, 0, 0.92, 0) -- Moved closer to center
+    jumpButton.AnchorPoint = Vector2.new(0.5, 1) -- Center anchor like trail shop
     jumpButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
     jumpButton.BorderSizePixel = 0
     jumpButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -365,6 +439,279 @@
         end
     end)
 
+    -- Nitro system setup
+    local nitroRemoteEvents = {
+        useNitro = nil,
+        nitroUpdate = nil
+    }
+    
+    -- Function to safely get nitro remote events
+    local function getNitroRemoteEvent(name)
+        return ReplicatedStorage:FindFirstChild(name)
+    end
+    
+    -- Function to update nitro bar display
+    local function updateNitroBar(currentNitro, maxNitro, isActive)
+        local nitroFill = nitroBarFrame:FindFirstChild("NitroFill")
+        if not nitroFill then return end
+        
+        local fillPercentage = currentNitro / maxNitro
+        local targetSize = UDim2.new(fillPercentage, 0, 1, 0)
+        
+        -- Change color based on state
+        if isActive then
+            nitroFill.BackgroundColor3 = Color3.fromRGB(255, 255, 0) -- Yellow when active
+        elseif fillPercentage >= 1 then
+            nitroFill.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Green when full
+        else
+            nitroFill.BackgroundColor3 = Color3.fromRGB(0, 150, 255) -- Blue when refilling
+        end
+        
+        -- Smooth tween to new size
+        local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local sizeTween = TweenService:Create(nitroFill, tweenInfo, {Size = targetSize})
+        sizeTween:Play()
+    end
+    
+    -- Input handling for nitro - hold to use
+    local isShiftPressed = false
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        
+        if (input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift) and not isShiftPressed then
+            isShiftPressed = true
+            local startNitroEvent = getNitroRemoteEvent("StartNitro")
+            if startNitroEvent then
+                startNitroEvent:FireServer()
+            end
+        end
+    end)
+    
+    UserInputService.InputEnded:Connect(function(input, gameProcessed)
+        if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+            isShiftPressed = false
+            local stopNitroEvent = getNitroRemoteEvent("StopNitro")
+            if stopNitroEvent then
+                stopNitroEvent:FireServer()
+            end
+        end
+    end)
+    
+    -- Listen for nitro updates from server
+    spawn(function()
+        local nitroUpdateEvent = ReplicatedStorage:WaitForChild("NitroUpdate", 10)
+        if nitroUpdateEvent then
+            nitroUpdateEvent.OnClientEvent:Connect(function(currentNitro, maxNitro, isActive)
+                updateNitroBar(currentNitro, maxNitro, isActive)
+            end)
+        end
+    end)
+    
+    -- Fire effect functions for speedometer
+    local function addSpeedometerFireEffect()
+        -- Add fire particles around the speedometer
+        if speedometer then
+            -- Create attachment points around the speedometer for fire particles
+            local attachmentPositions = {
+                {0.2, 0.2}, {0.8, 0.2}, {0.2, 0.8}, {0.8, 0.8}, -- Corners
+                {0.5, 0.1}, {0.9, 0.5}, {0.5, 0.9}, {0.1, 0.5}  -- Mid-edges
+            }
+            
+            for i, pos in ipairs(attachmentPositions) do
+                local fireFrame = Instance.new("Frame")
+                fireFrame.Name = "FireEffect" .. i
+                fireFrame.Size = UDim2.new(0.05, 0, 0.05, 0) -- Small fire points
+                fireFrame.Position = UDim2.new(pos[1], 0, pos[2], 0)
+                fireFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+                fireFrame.BackgroundTransparency = 1
+                fireFrame.Parent = speedometer
+                
+                -- Create flame effect using multiple overlapping elements
+                -- Base flame (red/orange)
+                local baseFlame = Instance.new("Frame")
+                baseFlame.Size = UDim2.new(2, 0, 6, 0)
+                baseFlame.Position = UDim2.new(-0.5, 0, -3, 0)
+                baseFlame.BackgroundColor3 = Color3.fromRGB(255, 60, 0) -- Red-orange
+                baseFlame.BackgroundTransparency = 0.2
+                baseFlame.BorderSizePixel = 0
+                baseFlame.Rotation = math.random(-10, 10)
+                baseFlame.Parent = fireFrame
+                
+                -- Flame shape - wider at bottom, pointed at top
+                local flameShape = Instance.new("UICorner")
+                flameShape.CornerRadius = UDim.new(0, 15)
+                flameShape.Parent = baseFlame
+                
+                -- Middle flame layer (orange)
+                local midFlame = Instance.new("Frame")
+                midFlame.Size = UDim2.new(1.3, 0, 4, 0)
+                midFlame.Position = UDim2.new(0.35, 0, -1.5, 0)
+                midFlame.BackgroundColor3 = Color3.fromRGB(255, 120, 0) -- Orange
+                midFlame.BackgroundTransparency = 0.3
+                midFlame.BorderSizePixel = 0
+                midFlame.Rotation = math.random(-5, 5)
+                midFlame.Parent = fireFrame
+                
+                local midShape = Instance.new("UICorner")
+                midShape.CornerRadius = UDim.new(0, 12)
+                midShape.Parent = midFlame
+                
+                -- Inner flame core (yellow)
+                local innerFlame = Instance.new("Frame")
+                innerFlame.Size = UDim2.new(0.8, 0, 2.5, 0)
+                innerFlame.Position = UDim2.new(0.6, 0, -0.5, 0)
+                innerFlame.BackgroundColor3 = Color3.fromRGB(255, 255, 100) -- Yellow
+                innerFlame.BackgroundTransparency = 0.4
+                innerFlame.BorderSizePixel = 0
+                innerFlame.Parent = fireFrame
+                
+                local innerShape = Instance.new("UICorner")
+                innerShape.CornerRadius = UDim.new(0, 8)
+                innerShape.Parent = innerFlame
+                
+                -- Animate realistic flame flickering
+                spawn(function()
+                    while fireFrame.Parent do
+                        -- Base flame flicker (main body)
+                        local baseTween = TweenService:Create(baseFlame, 
+                            TweenInfo.new(0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+                            {
+                                Size = UDim2.new(2, 0, math.random(5, 7), 0),
+                                Rotation = math.random(-15, 15),
+                                BackgroundTransparency = math.random(15, 35) / 100
+                            }
+                        )
+                        
+                        -- Mid flame flicker (medium layer)
+                        local midTween = TweenService:Create(midFlame,
+                            TweenInfo.new(0.08, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+                            {
+                                Size = UDim2.new(1.3, 0, math.random(3, 5), 0),
+                                Rotation = math.random(-10, 10),
+                                BackgroundTransparency = math.random(25, 45) / 100
+                            }
+                        )
+                        
+                        -- Inner flame flicker (hot core)
+                        local innerTween = TweenService:Create(innerFlame,
+                            TweenInfo.new(0.06, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+                            {
+                                Size = UDim2.new(0.8, 0, math.random(2, 3), 0),
+                                BackgroundTransparency = math.random(30, 50) / 100
+                            }
+                        )
+                        
+                        baseTween:Play()
+                        midTween:Play()
+                        innerTween:Play()
+                        wait(0.1)
+                    end
+                end)
+            end
+            
+            -- Make speedometer face glow orange but keep it readable
+            if speedometerInner then
+                speedometerInner.BackgroundColor3 = Color3.fromRGB(255, 220, 180) -- Lighter warm glow so needle is visible
+                
+                -- Add orange glow border
+                local glowBorder = speedometerInner:FindFirstChild("UIStroke")
+                if not glowBorder then
+                    glowBorder = Instance.new("UIStroke")
+                    glowBorder.Name = "FireGlow"
+                    glowBorder.Parent = speedometerInner
+                end
+                glowBorder.Thickness = 3
+                glowBorder.Color = Color3.fromRGB(255, 100, 0)
+                glowBorder.Transparency = 0.2
+                
+                -- Make needle more visible during nitro
+                local needle = speedometerInner:FindFirstChild("SpeedNeedle")
+                if needle then
+                    local needleWhiteSide = needle:FindFirstChild("Frame") -- First frame is the white side
+                    if needleWhiteSide then
+                        needleWhiteSide.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Change to black for contrast
+                        
+                        -- Add white outline to make it stand out
+                        local needleOutline = needleWhiteSide:FindFirstChild("UIStroke")
+                        if not needleOutline then
+                            needleOutline = Instance.new("UIStroke")
+                            needleOutline.Name = "NeedleOutline"
+                            needleOutline.Parent = needleWhiteSide
+                        end
+                        needleOutline.Thickness = 2
+                        needleOutline.Color = Color3.fromRGB(255, 255, 255)
+                        needleOutline.Transparency = 0
+                    end
+                end
+                
+                -- Pulsing glow effect
+                spawn(function()
+                    while speedometerInner:FindFirstChild("FireGlow") do
+                        local pulseTween = TweenService:Create(glowBorder,
+                            TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+                            {Transparency = 0.8}
+                        )
+                        pulseTween:Play()
+                        wait(0.5)
+                    end
+                end)
+            end
+        end
+    end
+    
+    local function removeSpeedometerFireEffect()
+        -- Remove fire particles
+        if speedometer then
+            for i = 1, 8 do
+                local fireFrame = speedometer:FindFirstChild("FireEffect" .. i)
+                if fireFrame then
+                    fireFrame:Destroy()
+                end
+            end
+            
+            -- Reset speedometer appearance
+            if speedometerInner then
+                speedometerInner.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Back to white
+                
+                -- Remove glow border
+                local glowBorder = speedometerInner:FindFirstChild("FireGlow")
+                if glowBorder then
+                    glowBorder:Destroy()
+                end
+                
+                -- Reset needle back to white
+                local needle = speedometerInner:FindFirstChild("SpeedNeedle")
+                if needle then
+                    local needleWhiteSide = needle:FindFirstChild("Frame") -- First frame is the white side
+                    if needleWhiteSide then
+                        needleWhiteSide.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Back to white
+                        
+                        -- Remove needle outline
+                        local needleOutline = needleWhiteSide:FindFirstChild("NeedleOutline")
+                        if needleOutline then
+                            needleOutline:Destroy()
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    -- Listen for speedometer fire effect from server
+    spawn(function()
+        local speedometerFireEvent = ReplicatedStorage:WaitForChild("SpeedometerFireEffect", 10)
+        if speedometerFireEvent then
+            speedometerFireEvent.OnClientEvent:Connect(function(enableFire)
+                if enableFire then
+                    addSpeedometerFireEffect()
+                else
+                    removeSpeedometerFireEffect()
+                end
+            end)
+        end
+    end)
+
     local jumpCorner = Instance.new("UICorner")
     jumpCorner.CornerRadius = UDim.new(0, 8)
     jumpCorner.Parent = jumpButton
@@ -384,17 +731,18 @@
     jumpFillCorner.CornerRadius = UDim.new(0, 8)
     jumpFillCorner.Parent = jumpFill
 
-    -- Fire Trail Shop Button
+    -- Fire Trail Shop Button - now properly scaling
     local trailButton = Instance.new("TextButton")
     trailButton.Name = "TrailButton"
-    trailButton.Size = UDim2.new(0, 120, 0, 50)
-    trailButton.Position = UDim2.new(0, 20, 1, -210)
+    trailButton.Size = UDim2.new(0.15, 0, 0.06, 0) -- 15% width, 6% height like trail shop
+    trailButton.Position = UDim2.new(0.02, 0, 0.92, 0) -- 2% from left, 8% from bottom
+    trailButton.AnchorPoint = Vector2.new(0, 1) -- Left anchor like trail shop
     trailButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
     trailButton.BorderSizePixel = 0
     trailButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     trailButton.TextScaled = true
     trailButton.Font = Enum.Font.FredokaOne
-    trailButton.Text = "🔥 Fire Trails"
+    trailButton.Text = "Trail Shop"
     trailButton.ZIndex = 1
     trailButton.Parent = screenGui
 

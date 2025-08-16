@@ -116,7 +116,14 @@ function SpeedController.updatePlayerSpeed(player)
         local speedProgress = math.min(accelerationTime / adjustedAccelTime, 1)
         speedProgress = 1 - math.pow(1 - speedProgress, 3) -- Ease-out cubic for Flash-like acceleration
         
-        data.targetSpeed = data.maxSpeed * speedProgress
+        -- Check for nitro multiplier
+        local nitroMultiplier = 1
+        local nitroMultiplierValue = data.character:FindFirstChild("NitroMultiplier")
+        if nitroMultiplierValue then
+            nitroMultiplier = nitroMultiplierValue.Value
+        end
+        
+        data.targetSpeed = data.maxSpeed * speedProgress * nitroMultiplier
     else
         -- Player stopped trying to move - decelerate
         if data.isMoving then
