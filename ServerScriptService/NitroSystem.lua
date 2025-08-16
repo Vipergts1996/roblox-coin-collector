@@ -9,6 +9,7 @@ local NITRO_CONSUMPTION_RATE = 33.33 -- Units per second (3 seconds to deplete 1
 local NITRO_REFILL_TIME = 8 -- seconds to fully refill
 local NITRO_ACCELERATION_MULTIPLIER = 3 -- 3x acceleration boost
 local NITRO_MAX = 100 -- Maximum nitro amount
+local NITRO_SOUND_ID = "rbxassetid://1234567890" -- Replace with your actual sound asset ID
 
 -- Player nitro data
 local playerNitroData = {}
@@ -30,7 +31,8 @@ function NitroSystem.initializePlayer(player)
     playerNitroData[player] = {
         nitroAmount = NITRO_MAX, -- Start with full nitro
         isUsingNitro = false,
-        lastUpdateTime = tick()
+        lastUpdateTime = tick(),
+        nitroSound = nil -- Track the current nitro sound
     }
     
     -- Send initial nitro amount to client
@@ -85,6 +87,25 @@ function NitroSystem.startNitro(player)
     local data = playerNitroData[player]
     data.isUsingNitro = true
     
+    -- Play nitro sound effect
+    local character = player.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local rootPart = character.HumanoidRootPart
+        
+        -- Create and play sound from asset ID
+        local nitroSound = Instance.new("Sound")
+        nitroSound.SoundId = NITRO_SOUND_ID
+        nitroSound.Volume = 0.5
+        nitroSound.Looped = true -- Loop the sound while nitro is active
+        nitroSound.Parent = rootPart
+        
+        -- Store sound reference for later cleanup
+        data.nitroSound = nitroSound
+        
+        -- Play sound
+        nitroSound:Play()
+    end
+    
     -- Apply nitro effect to character
     local character = player.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
@@ -110,6 +131,13 @@ function NitroSystem.stopNitro(player)
     if not data then return end
     
     data.isUsingNitro = false
+    
+    -- Stop and clean up nitro sound
+    if data.nitroSound then
+        data.nitroSound:Stop()
+        data.nitroSound:Destroy()
+        data.nitroSound = nil
+    end
     
     -- Remove nitro effect from character
     local character = player.Character
