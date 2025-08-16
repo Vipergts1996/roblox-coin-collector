@@ -2,13 +2,18 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
+local TrailManager = require(script.Parent.TrailManager)
+
 local SpeedEffects = {}
 
 local playerEffects = {}
 
-function SpeedEffects.createSpeedTrail(character)
+function SpeedEffects.createSpeedTrail(character, player)
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     if not rootPart then return nil end
+    
+    -- Get player's equipped trail info
+    local trailInfo = TrailManager.getEquippedTrailInfo(player)
     
     -- Create attachments for ground fire trail
     local attachment0 = Instance.new("Attachment")
@@ -36,13 +41,14 @@ function SpeedEffects.createSpeedTrail(character)
         NumberSequenceKeypoint.new(0.8, 0.7), -- Fade to embers
         NumberSequenceKeypoint.new(1, 1)     -- Disappear
     })
+    
+    -- Use trail colors from TrailManager
     trail.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 200)),   -- White hot center
-        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 180, 80)),  -- Yellow flames
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 120, 40)),  -- Orange flames
-        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(200, 60, 20)),   -- Deep orange
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 30, 10))      -- Dark red embers
+        ColorSequenceKeypoint.new(0, trailInfo.color1),   -- Primary color
+        ColorSequenceKeypoint.new(0.5, trailInfo.color2), -- Secondary color
+        ColorSequenceKeypoint.new(1, trailInfo.color2:lerp(Color3.fromRGB(0, 0, 0), 0.5)) -- Darker fade
     })
+    
     trail.WidthScale = NumberSequence.new({
         NumberSequenceKeypoint.new(0, 1.0),   -- Consistent width
         NumberSequenceKeypoint.new(1, 0.8)    -- Slight taper to embers
@@ -53,9 +59,63 @@ function SpeedEffects.createSpeedTrail(character)
     return trail
 end
 
-function SpeedEffects.createSpeedParticles(character)
+function SpeedEffects.createBackTrail(character, player)
     local rootPart = character:FindFirstChild("HumanoidRootPart")
     if not rootPart then return nil end
+    
+    -- Get player's equipped trail info
+    local trailInfo = TrailManager.getEquippedTrailInfo(player)
+    
+    -- Create attachments for back trail (wrapping around behind the character)
+    local backAttachment0 = Instance.new("Attachment")
+    backAttachment0.Name = "BackTrailAttachment0"
+    backAttachment0.Position = Vector3.new(0, -1, -1) -- Front of character
+    backAttachment0.Parent = rootPart
+    
+    local backAttachment1 = Instance.new("Attachment")
+    backAttachment1.Name = "BackTrailAttachment1"
+    backAttachment1.Position = Vector3.new(0, -1, 3) -- Behind character
+    backAttachment1.Parent = rootPart
+    
+    -- Create back trail
+    local backTrail = Instance.new("Trail")
+    backTrail.Name = "BackTrail"
+    backTrail.Attachment0 = backAttachment0
+    backTrail.Attachment1 = backAttachment1
+    backTrail.Lifetime = 1.8 -- Slightly shorter than ground trail
+    backTrail.MinLength = 1.5
+    backTrail.LightEmission = 1
+    backTrail.LightInfluence = 0
+    backTrail.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.2),  -- Start slightly more transparent
+        NumberSequenceKeypoint.new(0.5, 0.4),
+        NumberSequenceKeypoint.new(0.8, 0.8),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+    
+    -- Use same colors as ground trail
+    backTrail.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, trailInfo.color1),
+        ColorSequenceKeypoint.new(0.5, trailInfo.color2),
+        ColorSequenceKeypoint.new(1, trailInfo.color2:lerp(Color3.fromRGB(0, 0, 0), 0.5))
+    })
+    
+    backTrail.WidthScale = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.8),   -- Slightly narrower than ground trail
+        NumberSequenceKeypoint.new(1, 0.6)
+    })
+    backTrail.Enabled = false
+    backTrail.Parent = rootPart
+    
+    return backTrail
+end
+
+function SpeedEffects.createSpeedParticles(character, player)
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then return nil end
+    
+    -- Get player's equipped trail info
+    local trailInfo = TrailManager.getEquippedTrailInfo(player)
     
     -- Create attachment for particles
     local attachment = Instance.new("Attachment")
@@ -63,19 +123,28 @@ function SpeedEffects.createSpeedParticles(character)
     attachment.Position = Vector3.new(0, -1, 0)
     attachment.Parent = rootPart
     
-    -- Realistic speed particles (dust/debris)
+    -- Create particles based on trail type
     local particles = Instance.new("ParticleEmitter")
     particles.Name = "SpeedParticles"
-    particles.Texture = "rbxasset://textures/particles/smoke_main.dds" -- Use dust texture
+    
+    if trailInfo.particle == "Sparkles" then
+        particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+    else
+        particles.Texture = "rbxasset://textures/particles/fire_main.dds" -- Use fire texture for most trails
+    end
+    
     particles.Lifetime = NumberRange.new(0.4, 0.8)
     particles.Rate = 25 -- Fewer particles
     particles.SpreadAngle = Vector2.new(30, 15) -- More directional
     particles.Speed = NumberRange.new(10, 20) -- Slower, more realistic
     particles.Acceleration = Vector3.new(0, -5, 0) -- Gentle fall
+    
+    -- Use trail colors for particles
     particles.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 200, 210)), -- Light dust color
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(160, 160, 170))  -- Darker dust
+        ColorSequenceKeypoint.new(0, trailInfo.color1),
+        ColorSequenceKeypoint.new(1, trailInfo.color2)
     })
+    
     particles.Transparency = NumberSequence.new({
         NumberSequenceKeypoint.new(0, 0.6), -- Start quite transparent
         NumberSequenceKeypoint.new(0.7, 0.9),
@@ -157,11 +226,12 @@ function SpeedEffects.setupPlayerEffects(player)
         local humanoid = character:WaitForChild("Humanoid")
         local rootPart = character:WaitForChild("HumanoidRootPart")
         
-        -- Create all speed effects (removed sound)
+        -- Create all speed effects (removed sound and particles)
         local effects = {
-            trail = SpeedEffects.createSpeedTrail(character),
-            particles = SpeedEffects.createSpeedParticles(character),
-            smokeTrail = SpeedEffects.createSmokeTrail(character),
+            trail = SpeedEffects.createSpeedTrail(character, player),
+            backTrail = SpeedEffects.createBackTrail(character, player),
+            -- particles = SpeedEffects.createSpeedParticles(character, player), -- Disabled
+            -- smokeTrail = SpeedEffects.createSmokeTrail(character), -- Disabled
             isActive = false,
             lastSpeed = 0
         }
@@ -212,13 +282,15 @@ function SpeedEffects.updatePlayerEffects(player)
     local velocity = rootPart.Velocity
     local currentSpeed = math.sqrt(velocity.X^2 + velocity.Z^2)
     
-    -- Get max speed from leaderstats
+    -- Get max speed from leaderstats + trail boost
     local maxSpeed = 16 -- Default
     local leaderstats = player:FindFirstChild("leaderstats")
     if leaderstats and leaderstats:FindFirstChild("SpeedLevel") then
         local speedLevel = leaderstats.SpeedLevel.Value
         maxSpeed = 16 + ((speedLevel - 1) * 4)
     end
+    
+    -- Trail system now provides coin multipliers instead of speed boosts
     
     -- Calculate speed percentage - lower threshold for higher gears
     local speedPercent = currentSpeed / maxSpeed
@@ -259,6 +331,11 @@ function SpeedEffects.activateEffects(player)
         effects.trail.Enabled = true
     end
     
+    -- Enable back trail
+    if effects.backTrail then
+        effects.backTrail.Enabled = true
+    end
+    
     -- Enable particles
     if effects.particles then
         effects.particles.Enabled = true
@@ -281,6 +358,11 @@ function SpeedEffects.deactivateEffects(player)
     -- Disable trail
     if effects.trail then
         effects.trail.Enabled = false
+    end
+    
+    -- Disable back trail
+    if effects.backTrail then
+        effects.backTrail.Enabled = false
     end
     
     -- Disable particles
@@ -311,6 +393,48 @@ function SpeedEffects.updateEffectIntensity(player, speedPercent, threshold)
     if effects.smokeTrail then
         effects.smokeTrail.Rate = 30 + (intensity * 50) -- 30 to 80 smoke particles
     end
+end
+
+function SpeedEffects.updateTrailColors(player)
+    local effects = playerEffects[player]
+    if not effects or not player.Character then return end
+    
+    local trailInfo = TrailManager.getEquippedTrailInfo(player)
+    
+    -- Update trail colors
+    if effects.trail then
+        effects.trail.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, trailInfo.color1),   -- Primary color
+            ColorSequenceKeypoint.new(0.5, trailInfo.color2), -- Secondary color
+            ColorSequenceKeypoint.new(1, trailInfo.color2:lerp(Color3.fromRGB(0, 0, 0), 0.5)) -- Darker fade
+        })
+    end
+    
+    -- Update back trail colors
+    if effects.backTrail then
+        effects.backTrail.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, trailInfo.color1),
+            ColorSequenceKeypoint.new(0.5, trailInfo.color2),
+            ColorSequenceKeypoint.new(1, trailInfo.color2:lerp(Color3.fromRGB(0, 0, 0), 0.5))
+        })
+    end
+    
+    -- Update particle colors
+    if effects.particles then
+        effects.particles.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, trailInfo.color1),
+            ColorSequenceKeypoint.new(1, trailInfo.color2)
+        })
+        
+        -- Update particle texture based on trail type
+        if trailInfo.particle == "Sparkles" then
+            effects.particles.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+        else
+            effects.particles.Texture = "rbxasset://textures/particles/fire_main.dds"
+        end
+    end
+    
+    print("SpeedEffects: Updated trail colors for", player.Name, "to", trailInfo.color1, trailInfo.color2)
 end
 
 function SpeedEffects.stopAllEffects(player)

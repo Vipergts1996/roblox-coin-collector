@@ -2,26 +2,40 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+
+print("ShopGui: Starting to load...")
+
+-- Load TrailShop module
+print("ShopGui: About to require TrailShop...")
+local TrailShop = require(script.Parent.TrailShop)
+print("ShopGui: TrailShop module loaded successfully!")
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "UpgradeButtons"
 screenGui.Parent = playerGui
 
--- Realistic tachometer at top of screen
+-- Realistic tachometer - simple autoscaling approach
 local speedometer = Instance.new("Frame")
 speedometer.Name = "Speedometer"
-speedometer.Size = UDim2.new(0, 280, 0, 280)
-speedometer.Position = UDim2.new(0.5, -140, 0, -10)
-speedometer.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark metallic outer ring
-speedometer.BorderSizePixel = 3
-speedometer.BorderColor3 = Color3.fromRGB(100, 100, 100) -- Metallic silver border
+speedometer.Size = UDim2.new(0.18, 0, 0.18, 0) -- 18% of screen size
+speedometer.Position = UDim2.new(0.5, 0, 0.05, 0) -- Centered horizontally, 5% from top
+speedometer.AnchorPoint = Vector2.new(0.5, 0) -- Center anchor
+speedometer.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+speedometer.BorderSizePixel = 0
+speedometer.BorderColor3 = Color3.fromRGB(100, 100, 100)
 speedometer.Parent = screenGui
 
+-- UIAspectRatioConstraint to maintain square shape
+local speedometerAspect = Instance.new("UIAspectRatioConstraint")
+speedometerAspect.AspectRatio = 1.0
+speedometerAspect.Parent = speedometer
+
 local speedometerCorner = Instance.new("UICorner")
-speedometerCorner.CornerRadius = UDim.new(0.5, 0)
+speedometerCorner.CornerRadius = UDim.new(0.5, 0) -- 50% radius for perfect circle
 speedometerCorner.Parent = speedometer
 
 -- Middle bezel ring
@@ -33,7 +47,7 @@ speedometerBezel.BorderSizePixel = 0
 speedometerBezel.Parent = speedometer
 
 local speedometerBezelCorner = Instance.new("UICorner")
-speedometerBezelCorner.CornerRadius = UDim.new(0.5, 0)
+speedometerBezelCorner.CornerRadius = UDim.new(0.5, 0) -- 50% radius for perfect circle
 speedometerBezelCorner.Parent = speedometerBezel
 
 -- Inner speedometer face (clean white)
@@ -46,7 +60,7 @@ speedometerInner.BorderColor3 = Color3.fromRGB(180, 180, 180)
 speedometerInner.Parent = speedometerBezel
 
 local speedometerInnerCorner = Instance.new("UICorner")
-speedometerInnerCorner.CornerRadius = UDim.new(0.5, 0)
+speedometerInnerCorner.CornerRadius = UDim.new(0.5, 0) -- 50% radius for perfect circle
 speedometerInnerCorner.Parent = speedometerInner
 
 -- Dynamic tachometer numbers that scale with gear level
@@ -69,7 +83,7 @@ local function createSpeedNumbers(maxSpeed, minSpeed)
     for i = 0, 9 do
         local speedValue = minSpeed + (i / 9) * speedRange
         local numberLabel = Instance.new("TextLabel")
-        numberLabel.Size = UDim2.new(0, 30, 0, 30)
+        numberLabel.Size = UDim2.new(0.12, 0, 0.12, 0) -- 12% of speedometer size
         numberLabel.BackgroundTransparency = 1
         numberLabel.Text = tostring(math.floor(speedValue))
         numberLabel.TextColor3 = Color3.fromRGB(30, 30, 30)
@@ -84,7 +98,8 @@ local function createSpeedNumbers(maxSpeed, minSpeed)
         local radius = 0.35
         local x = 0.5 + math.cos(numberAngle) * radius
         local y = 0.5 + math.sin(numberAngle) * radius
-        numberLabel.Position = UDim2.new(x, -15, y, -15)
+        numberLabel.Position = UDim2.new(x, 0, y, 0)
+        numberLabel.AnchorPoint = Vector2.new(0.5, 0.5) -- Center the labels
         
         table.insert(speedNumbers, numberLabel)
     end
@@ -96,7 +111,7 @@ for i = 0, 9 do
     
     -- Major tick marks - shorter and positioned away from numbers
     local majorTick = Instance.new("Frame")
-    majorTick.Size = UDim2.new(0, 2, 0, 8) -- Much shorter
+    majorTick.Size = UDim2.new(0.01, 0, 0.04, 0) -- 1% width, 4% height
     majorTick.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     majorTick.BorderSizePixel = 0
     majorTick.AnchorPoint = Vector2.new(0.5, 1)
@@ -115,7 +130,7 @@ for i = 0, 9 do
             local minorAngle = math.rad(i * 30 + j * 10 - 230)
             
             local minorTick = Instance.new("Frame")
-            minorTick.Size = UDim2.new(0, 1, 0, 4) -- Very short minor ticks
+            minorTick.Size = UDim2.new(0.005, 0, 0.02, 0) -- 0.5% width, 2% height
             minorTick.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
             minorTick.BorderSizePixel = 0
             minorTick.AnchorPoint = Vector2.new(0.5, 1)
@@ -133,37 +148,37 @@ end
 -- Initialize with starting numbers
 createSpeedNumbers(90)
 
--- Realistic speed needle (keeping original positioning)
+-- Realistic speed needle - now autoscaling
 local needle = Instance.new("Frame")
 needle.Name = "SpeedNeedle"
-needle.Size = UDim2.new(0, 3, 0, 105) -- Thinner, more elegant needle
-needle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Same center position
+needle.Size = UDim2.new(0.02, 0, 0.75, 0) -- 2% width, 75% height of speedometer
+needle.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center position
 needle.BackgroundTransparency = 1
 needle.BorderSizePixel = 0
 needle.AnchorPoint = Vector2.new(0.5, 0.5)
 needle.ZIndex = 3
-needle.Rotation = -320 -- Same starting angle
+needle.Rotation = -320 -- Starting angle
 needle.Parent = speedometerInner
 
--- White pointing side (entire half that reads the numbers)
+-- White pointing side (entire half that reads the numbers) - autoscaling
 local needleWhiteSide = Instance.new("Frame")
-needleWhiteSide.Size = UDim2.new(1, 0, 0.6, 0) -- Large white pointing section
+needleWhiteSide.Size = UDim2.new(1, 0, 0.6, 0) -- 60% of needle length
 needleWhiteSide.Position = UDim2.new(0, 0, 0, 0)
 needleWhiteSide.BackgroundColor3 = Color3.fromRGB(250, 250, 250) -- Match gauge face exactly
 needleWhiteSide.BorderSizePixel = 0
 needleWhiteSide.Parent = needle
 
--- Needle shaft (small dark center section)
+-- Needle shaft (small dark center section) - autoscaling
 local needleShaft = Instance.new("Frame")
-needleShaft.Size = UDim2.new(1, 0, 0.25, 0) -- Smaller center section
+needleShaft.Size = UDim2.new(1, 0, 0.25, 0) -- 25% of needle length
 needleShaft.Position = UDim2.new(0, 0, 0.6, 0)
 needleShaft.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Dark metallic
 needleShaft.BorderSizePixel = 0
 needleShaft.Parent = needle
 
--- Needle base (red back section)
+-- Needle base (red back section) - autoscaling
 local needleBase = Instance.new("Frame")
-needleBase.Size = UDim2.new(1, 0, 0.15, 0)
+needleBase.Size = UDim2.new(1, 0, 0.15, 0) -- 15% of needle length
 needleBase.Position = UDim2.new(0, 0, 0.85, 0)
 needleBase.BackgroundColor3 = Color3.fromRGB(220, 50, 50) -- Red base
 needleBase.BorderSizePixel = 0
@@ -171,43 +186,68 @@ needleBase.Parent = needle
 
 -- Realistic center hub
 local centerHub = Instance.new("Frame")
-centerHub.Size = UDim2.new(0, 14, 0, 14)
-centerHub.Position = UDim2.new(0.5, -7, 0.5, -7)
+centerHub.Size = UDim2.new(0.08, 0, 0.08, 0) -- 8% of speedometer size
+centerHub.Position = UDim2.new(0.5, 0, 0.5, 0)
+centerHub.AnchorPoint = Vector2.new(0.5, 0.5) -- Perfect center
 centerHub.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Metallic center
-centerHub.BorderSizePixel = 2
+centerHub.BorderSizePixel = 0 -- Remove fixed border
 centerHub.BorderColor3 = Color3.fromRGB(120, 120, 120)
 centerHub.ZIndex = 4
 centerHub.Parent = speedometerInner
 
+-- Add aspect ratio to keep it circular
+local centerHubAspect = Instance.new("UIAspectRatioConstraint")
+centerHubAspect.AspectRatio = 1.0
+centerHubAspect.Parent = centerHub
+
+-- Add border using UIStroke
+local centerHubBorder = Instance.new("UIStroke")
+centerHubBorder.Thickness = 2
+centerHubBorder.Color = Color3.fromRGB(120, 120, 120)
+centerHubBorder.Parent = centerHub
+
 local centerHubCorner = Instance.new("UICorner")
-centerHubCorner.CornerRadius = UDim.new(0.5, 0)
+centerHubCorner.CornerRadius = UDim.new(0.5, 0) -- 50% radius for perfect circle
 centerHubCorner.Parent = centerHub
 
 -- Inner center dot
 local centerDot = Instance.new("Frame")
-centerDot.Size = UDim2.new(0, 6, 0, 6)
-centerDot.Position = UDim2.new(0.5, -3, 0.5, -3)
+centerDot.Size = UDim2.new(0.04, 0, 0.04, 0) -- 4% of speedometer size
+centerDot.Position = UDim2.new(0.5, 0, 0.5, 0)
+centerDot.AnchorPoint = Vector2.new(0.5, 0.5) -- Perfect center
 centerDot.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 centerDot.BorderSizePixel = 0
 centerDot.ZIndex = 5
 centerDot.Parent = speedometerInner
 
+-- Add aspect ratio to keep it circular
+local centerDotAspect = Instance.new("UIAspectRatioConstraint")
+centerDotAspect.AspectRatio = 1.0
+centerDotAspect.Parent = centerDot
+
 local centerDotCorner = Instance.new("UICorner")
-centerDotCorner.CornerRadius = UDim.new(0.5, 0)
+centerDotCorner.CornerRadius = UDim.new(0.5, 0) -- 50% radius for perfect circle
 centerDotCorner.Parent = centerDot
 
 
 -- Gear display (7-segment style)
 local gearFrame = Instance.new("Frame")
-gearFrame.Size = UDim2.new(0, 68, 0, 51)
-gearFrame.Position = UDim2.new(0.5, -34, 0.7, 0)
+gearFrame.Size = UDim2.new(0.35, 0, 0.2, 0) -- 35% width, 20% height of speedometer
+gearFrame.Position = UDim2.new(0.5, 0, 0.7, 0)
+gearFrame.AnchorPoint = Vector2.new(0.5, 0) -- Center horizontally
 gearFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-gearFrame.BorderSizePixel = 2
+gearFrame.BorderSizePixel = 0 -- Remove fixed border
 gearFrame.BorderColor3 = Color3.fromRGB(100, 100, 100)
 gearFrame.Parent = speedometerInner
 
+-- Add border using UIStroke
+local gearBorder = Instance.new("UIStroke")
+gearBorder.Thickness = 2
+gearBorder.Color = Color3.fromRGB(100, 100, 100)
+gearBorder.Parent = gearFrame
+
 local gearCorner = Instance.new("UICorner")
-gearCorner.CornerRadius = UDim.new(0, 5)
+gearCorner.CornerRadius = UDim.new(0.1, 0) -- 10% radius for proportional corners
 gearCorner.Parent = gearFrame
 
 -- Gear label
@@ -233,11 +273,12 @@ gearNumber.TextScaled = true
 gearNumber.Font = Enum.Font.Code
 gearNumber.Parent = gearFrame
 
--- Speed Upgrade Button
+-- Speed Upgrade Button - simple autoscaling
 local speedButton = Instance.new("TextButton")
 speedButton.Name = "SpeedButton"
-speedButton.Size = UDim2.new(0, 150, 0, 60)
-speedButton.Position = UDim2.new(0.5, -160, 1, -80)
+speedButton.Size = UDim2.new(0.2, 0, 0.08, 0) -- 20% width, 8% height
+speedButton.Position = UDim2.new(0.25, 0, 0.92, 0) -- Left side, 8% from bottom
+speedButton.AnchorPoint = Vector2.new(0.5, 1) -- Center anchor
 speedButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
 speedButton.BorderSizePixel = 0
 speedButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -260,7 +301,7 @@ speedText.Parent = speedButton
 speedButton.Text = ""
 
 local speedCorner = Instance.new("UICorner")
-speedCorner.CornerRadius = UDim.new(0, 8)
+speedCorner.CornerRadius = UDim.new(0, 8) -- Fixed radius that scales with button
 speedCorner.Parent = speedButton
 
 -- Speed button fill bar
@@ -275,14 +316,15 @@ speedFill.ZIndex = 2
 speedFill.Parent = speedButton
 
 local speedFillCorner = Instance.new("UICorner")
-speedFillCorner.CornerRadius = UDim.new(0, 8)
+speedFillCorner.CornerRadius = UDim.new(0.15, 0) -- 15% radius for proportional corners
 speedFillCorner.Parent = speedFill
 
--- Jump Upgrade Button
+-- Jump Upgrade Button - simple autoscaling
 local jumpButton = Instance.new("TextButton")
 jumpButton.Name = "JumpButton"
-jumpButton.Size = UDim2.new(0, 150, 0, 60)
-jumpButton.Position = UDim2.new(0.5, 10, 1, -80)
+jumpButton.Size = UDim2.new(0.2, 0, 0.08, 0) -- 20% width, 8% height
+jumpButton.Position = UDim2.new(0.75, 0, 0.92, 0) -- Right side, 8% from bottom
+jumpButton.AnchorPoint = Vector2.new(0.5, 1) -- Center anchor
 jumpButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
 jumpButton.BorderSizePixel = 0
 jumpButton.TextColor3 = Color3.fromRGB(0, 0, 0)
@@ -366,7 +408,7 @@ spawn(function()
 end)
 
 local jumpCorner = Instance.new("UICorner")
-jumpCorner.CornerRadius = UDim.new(0, 8)
+jumpCorner.CornerRadius = UDim.new(0, 8) -- Fixed radius that scales with button
 jumpCorner.Parent = jumpButton
 
 -- Jump button fill bar
@@ -381,9 +423,27 @@ jumpFill.ZIndex = 2
 jumpFill.Parent = jumpButton
 
 local jumpFillCorner = Instance.new("UICorner")
-jumpFillCorner.CornerRadius = UDim.new(0, 8)
+jumpFillCorner.CornerRadius = UDim.new(0.15, 0) -- 15% radius for proportional corners
 jumpFillCorner.Parent = jumpFill
 
+-- Trail Shop Button - simple autoscaling
+local trailButton = Instance.new("TextButton")
+trailButton.Name = "TrailButton"
+trailButton.Size = UDim2.new(0.15, 0, 0.06, 0) -- 15% width, 6% height
+trailButton.Position = UDim2.new(0.02, 0, 0.92, 0) -- 2% from left, 8% from bottom
+trailButton.AnchorPoint = Vector2.new(0, 1) -- Left anchor
+trailButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+trailButton.BorderSizePixel = 0
+trailButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+trailButton.TextScaled = true
+trailButton.Font = Enum.Font.FredokaOne
+trailButton.Text = "🔥 Trails"
+trailButton.ZIndex = 1
+trailButton.Parent = screenGui
+
+local trailCorner = Instance.new("UICorner")
+trailCorner.CornerRadius = UDim.new(0, 8) -- Fixed radius that scales with button
+trailCorner.Parent = trailButton
 
 local function updateButtonDisplay()
     local leaderstats = player:FindFirstChild("leaderstats")
@@ -475,6 +535,10 @@ jumpButton.MouseButton1Click:Connect(function()
     remoteEvent:FireServer()
 end)
 
+trailButton.MouseButton1Click:Connect(function()
+    TrailShop.toggleShop()
+end)
+
 player.ChildAdded:Connect(function(child)
     if child.Name == "leaderstats" then
         local coins = child:WaitForChild("Coins")
@@ -496,5 +560,7 @@ if player:FindFirstChild("leaderstats") then
         updateButtonDisplay()
     end
 end
+
+-- Simple autoscaling complete
 
 

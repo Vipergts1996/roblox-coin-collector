@@ -47,12 +47,20 @@ function CoinCollector.onCoinTouched(hit, hitbox)
     end
     
     local coinValueData = hitbox:FindFirstChild("CoinValue")
-    local coinWorth = 1
+    local baseCoinWorth = 1
     if coinValueData then
-        coinWorth = coinValueData.Value
+        baseCoinWorth = coinValueData.Value
     end
     
-    coinsValue.Value = coinsValue.Value + coinWorth
+    -- Apply trail coin multiplier if equipped
+    local trailMultiplier = 1.0
+    local trailMultiplierValue = character:FindFirstChild("TrailCoinMultiplier")
+    if trailMultiplierValue then
+        trailMultiplier = trailMultiplierValue.Value
+    end
+    
+    local totalCoinWorth = math.floor(baseCoinWorth * trailMultiplier)
+    coinsValue.Value = coinsValue.Value + totalCoinWorth
     
     local collectSound = Instance.new("Sound")
     collectSound.SoundId = "rbxasset://sounds/electronicpingshort.wav"
@@ -66,7 +74,7 @@ function CoinCollector.onCoinTouched(hit, hitbox)
     
     hitbox:Destroy()
     
-    print(player.Name .. " collected a " .. coinWorth .. " coin! Total: " .. coinsValue.Value)
+    print(player.Name .. " collected a " .. baseCoinWorth .. " coin (x" .. trailMultiplier .. " = " .. totalCoinWorth .. ")! Total: " .. coinsValue.Value)
 end
 
 function CoinCollector.setupCoin(hitbox)

@@ -7,6 +7,7 @@ local CoinSpawner = require(script.Parent.CoinSpawner)
 local SpeedShop = require(script.Parent.SpeedShop)
 local SpeedController = require(script.Parent.SpeedController)
 local SpeedEffects = require(script.Parent.SpeedEffects)
+local TrailManager = require(script.Parent.TrailManager)
 
 print("🎮 Initializing Roblox Coin Collector Game...")
 
@@ -18,3 +19,4 @@ SpeedController.start()
 SpeedEffects.start()
 
 print("✅ Game fully initialized!")
+print("🔥 Fire Trail System ready! Press T to open Trail Shop")
