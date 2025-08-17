@@ -8,81 +8,102 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CoinGui"
 screenGui.Parent = playerGui
 
--- Odometer-style coin display
+-- Car dashboard-style odometer display
 local odometerFrame = Instance.new("Frame")
-odometerFrame.Size = UDim2.new(0.25, 0, 0.08, 0) -- Wider for odometer
-odometerFrame.Position = UDim2.new(0.02, 0, 0.02, 0)
-odometerFrame.AnchorPoint = Vector2.new(0, 0)
-odometerFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark like speedometer
+odometerFrame.Size = UDim2.new(0.22, 0, 0.06, 0) -- Car dashboard proportions
+odometerFrame.Position = UDim2.new(0.5, 0, 0.78, 0) -- Higher up, centered above speed/jump buttons
+odometerFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+odometerFrame.BackgroundColor3 = Color3.fromRGB(40, 35, 30) -- Dark brown/black housing for rolling drums
 odometerFrame.BorderSizePixel = 0
 odometerFrame.Parent = screenGui
 
 local odometerCorner = Instance.new("UICorner")
-odometerCorner.CornerRadius = UDim.new(0.1, 0)
+odometerCorner.CornerRadius = UDim.new(0.05, 0) -- Less rounded for car look
 odometerCorner.Parent = odometerFrame
 
--- Add metallic border
+-- Car dashboard bezel effect
 local odometerBorder = Instance.new("UIStroke")
-odometerBorder.Thickness = 2
-odometerBorder.Color = Color3.fromRGB(100, 100, 100)
+odometerBorder.Thickness = 1
+odometerBorder.Color = Color3.fromRGB(80, 80, 80) -- Subtle metallic
 odometerBorder.Parent = odometerFrame
 
--- Coins label
+-- Inner housing for rolling drums
+local shadowFrame = Instance.new("Frame")
+shadowFrame.Size = UDim2.new(0.98, 0, 0.95, 0)
+shadowFrame.Position = UDim2.new(0.01, 0, 0.025, 0)
+shadowFrame.BackgroundColor3 = Color3.fromRGB(30, 25, 20) -- Darker housing for drum cavity
+shadowFrame.BorderSizePixel = 0
+shadowFrame.Parent = odometerFrame
+
+local shadowCorner = Instance.new("UICorner")
+shadowCorner.CornerRadius = UDim.new(0.05, 0)
+shadowCorner.Parent = shadowFrame
+
+-- Car-style label
 local coinsLabel = Instance.new("TextLabel")
-coinsLabel.Size = UDim2.new(0.3, 0, 1, 0)
-coinsLabel.Position = UDim2.new(0.02, 0, 0, 0)
+coinsLabel.Size = UDim2.new(0.25, 0, 0.4, 0)
+coinsLabel.Position = UDim2.new(0.02, 0, 0.1, 0)
 coinsLabel.BackgroundTransparency = 1
 coinsLabel.Text = "COINS"
-coinsLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+coinsLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber car dashboard color
 coinsLabel.TextScaled = true
-coinsLabel.Font = Enum.Font.GothamBold
-coinsLabel.Parent = odometerFrame
+coinsLabel.Font = Enum.Font.Highway -- More automotive font
+coinsLabel.Parent = shadowFrame
 
--- Odometer digits container
+-- Rolling drums container
 local digitsFrame = Instance.new("Frame")
-digitsFrame.Size = UDim2.new(0.65, 0, 0.8, 0)
-digitsFrame.Position = UDim2.new(0.33, 0, 0.1, 0)
-digitsFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 10) -- Very dark background
+digitsFrame.Size = UDim2.new(0.7, 0, 0.6, 0)
+digitsFrame.Position = UDim2.new(0.28, 0, 0.5, 0)
+digitsFrame.AnchorPoint = Vector2.new(0, 0.5)
+digitsFrame.BackgroundColor3 = Color3.fromRGB(20, 15, 10) -- Very dark background behind drums
 digitsFrame.BorderSizePixel = 0
-digitsFrame.Parent = odometerFrame
+digitsFrame.Parent = shadowFrame
 
 local digitsCorner = Instance.new("UICorner")
-digitsCorner.CornerRadius = UDim.new(0.1, 0)
+digitsCorner.CornerRadius = UDim.new(0.02, 0) -- Very slight rounding like LCD display
 digitsCorner.Parent = digitsFrame
 
--- Inset border for digits
+-- LCD-style inset border
 local digitsBorder = Instance.new("UIStroke")
 digitsBorder.Thickness = 1
-digitsBorder.Color = Color3.fromRGB(60, 60, 60)
+digitsBorder.Color = Color3.fromRGB(40, 40, 40)
 digitsBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 digitsBorder.Parent = digitsFrame
 
--- Grid layout for digits
-local gridLayout = Instance.new("UIGridLayout")
-gridLayout.CellSize = UDim2.new(0.15, 0, 1, 0) -- 6 digits max
-gridLayout.CellPadding = UDim2.new(0.01, 0, 0, 0)
-gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-gridLayout.FillDirection = Enum.FillDirection.Horizontal
-gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-gridLayout.Parent = digitsFrame
+-- List layout for digits - more reliable than grid
+local listLayout = Instance.new("UIListLayout")
+listLayout.FillDirection = Enum.FillDirection.Horizontal
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 0) -- No padding between digits
+listLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+listLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+listLayout.Parent = digitsFrame
 
 -- Odometer system
 local maxDigits = 6
 local digitFrames = {}
 local currentValue = 0
 
--- Create individual digit displays
+-- Create individual rolling drum digit displays
 for i = 1, maxDigits do
     local digitContainer = Instance.new("Frame")
     digitContainer.Name = "Digit" .. i
-    digitContainer.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+    digitContainer.Size = UDim2.new(0.166, 0, 1, 0) -- Fixed size for each digit
+    digitContainer.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Dark background like rolling drums
     digitContainer.BorderSizePixel = 0
     digitContainer.LayoutOrder = i
     digitContainer.Parent = digitsFrame
     
+    -- Rolling drum styling - more rectangular
     local digitCorner = Instance.new("UICorner")
-    digitCorner.CornerRadius = UDim.new(0.1, 0)
+    digitCorner.CornerRadius = UDim.new(0.08, 0) -- Slightly rounded like drum edges
     digitCorner.Parent = digitContainer
+    
+    -- Add subtle border for drum separation
+    local digitBorder = Instance.new("UIStroke")
+    digitBorder.Thickness = 1
+    digitBorder.Color = Color3.fromRGB(60, 60, 60) -- Subtle dark border
+    digitBorder.Parent = digitContainer
     
     -- Scrolling frame for rolling effect
     local scrollFrame = Instance.new("ScrollingFrame")
@@ -103,9 +124,11 @@ for i = 1, maxDigits do
         digitLabel.Position = UDim2.new(0, 0, digit * 0.1, 0)
         digitLabel.BackgroundTransparency = 1
         digitLabel.Text = tostring(digit)
-        digitLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        digitLabel.TextColor3 = Color3.fromRGB(220, 180, 120) -- Warm cream/beige like rolling drum numbers
         digitLabel.TextScaled = true
-        digitLabel.Font = Enum.Font.Code -- Monospace font like car odometer
+        digitLabel.Font = Enum.Font.GothamBold -- Bold numbers for rolling drums
+        digitLabel.TextStrokeTransparency = 0.8
+        digitLabel.TextStrokeColor3 = Color3.fromRGB(160, 120, 80) -- Subtle warm outline
         digitLabel.Parent = scrollFrame
     end
     

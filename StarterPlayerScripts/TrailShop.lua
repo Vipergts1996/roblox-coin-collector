@@ -44,37 +44,46 @@ function TrailShop.createGui()
     background.BorderSizePixel = 0
     background.Parent = shopGui
     
-    -- Main shop frame - properly autoscaling
+    -- Main shop frame - automotive dashboard style
     local shopFrame = Instance.new("Frame")
     shopFrame.Name = "ShopFrame"
     shopFrame.Size = UDim2.new(0.8, 0, 0.8, 0) -- 80% of screen width and height
     shopFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Center of screen
     shopFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    shopFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    shopFrame.BackgroundColor3 = Color3.fromRGB(40, 35, 30) -- Dark brown/black like dashboard
     shopFrame.BorderSizePixel = 0
-    shopFrame.BorderColor3 = Color3.fromRGB(100, 100, 100)
     shopFrame.Parent = background
     
-    -- Don't store reference directly on shopGui object
+    -- Automotive border effect
+    local shopBorder = Instance.new("UIStroke")
+    shopBorder.Thickness = 2
+    shopBorder.Color = Color3.fromRGB(100, 100, 100) -- Metallic border
+    shopBorder.Parent = shopFrame
     
     local shopCorner = Instance.new("UICorner")
-    shopCorner.CornerRadius = UDim.new(0.05, 0) -- 5% radius for proportional corners
+    shopCorner.CornerRadius = UDim.new(0.02, 0) -- Less rounded for automotive look
     shopCorner.Parent = shopFrame
     
-    -- Title
+    -- Title - automotive dashboard style
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, 0, 0.1, 0) -- 10% of shop height
     titleLabel.Position = UDim2.new(0, 0, 0, 0)
-    titleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    titleLabel.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Dark automotive gray
     titleLabel.BorderSizePixel = 0
-    titleLabel.Text = "🔥 TRAIL SHOP 🔥"
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.Text = "TRAIL SHOP"
+    titleLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber accent color
     titleLabel.TextScaled = true
-    titleLabel.Font = Enum.Font.FredokaOne
+    titleLabel.Font = Enum.Font.Highway -- Automotive font
     titleLabel.Parent = shopFrame
     
+    -- Automotive border for title
+    local titleBorder = Instance.new("UIStroke")
+    titleBorder.Thickness = 1
+    titleBorder.Color = Color3.fromRGB(80, 80, 80)
+    titleBorder.Parent = titleLabel
+    
     local titleCorner = Instance.new("UICorner")
-    titleCorner.CornerRadius = UDim.new(0.1, 0) -- 10% radius for proportional corners
+    titleCorner.CornerRadius = UDim.new(0.02, 0) -- Less rounded for automotive look
     titleCorner.Parent = titleLabel
     
     -- Close button - autoscales with screen size
@@ -99,16 +108,22 @@ function TrailShop.createGui()
     closeCorner.CornerRadius = UDim.new(0.2, 0) -- 20% radius for proportional corners
     closeCorner.Parent = closeButton
     
-    -- Coins display - autoscales with screen size
+    -- Coins display - automotive gauge style
     local coinsFrame = Instance.new("Frame")
     coinsFrame.Size = UDim2.new(0.35, 0, 0.08, 0) -- 35% width, 8% height
     coinsFrame.Position = UDim2.new(0.02, 0, 0.12, 0) -- 2% from left, 12% from top
-    coinsFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    coinsFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Dark background like odometer
     coinsFrame.BorderSizePixel = 0
     coinsFrame.Parent = shopFrame
     
+    -- Automotive border for coins
+    local coinsBorder = Instance.new("UIStroke")
+    coinsBorder.Thickness = 1
+    coinsBorder.Color = Color3.fromRGB(80, 80, 80)
+    coinsBorder.Parent = coinsFrame
+    
     local coinsCorner = Instance.new("UICorner")
-    coinsCorner.CornerRadius = UDim.new(0.15, 0) -- 15% radius for proportional corners
+    coinsCorner.CornerRadius = UDim.new(0.05, 0) -- Less rounded for automotive look
     coinsCorner.Parent = coinsFrame
     
     local coinsLabel = Instance.new("TextLabel")
@@ -117,22 +132,28 @@ function TrailShop.createGui()
     coinsLabel.Position = UDim2.new(0, 0, 0, 0)
     coinsLabel.BackgroundTransparency = 1
     coinsLabel.Text = "💰 0 Coins"
-    coinsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    coinsLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber color
     coinsLabel.TextScaled = true
-    coinsLabel.Font = Enum.Font.GothamBold
+    coinsLabel.Font = Enum.Font.Highway -- Automotive font
     coinsLabel.Parent = coinsFrame
     
-    -- Current trail display - autoscales with screen size
+    -- Current trail display - automotive gauge style
     local currentFrame = Instance.new("Frame")
     currentFrame.Size = UDim2.new(0.35, 0, 0.08, 0) -- 35% width, 8% height
     currentFrame.Position = UDim2.new(0.98, 0, 0.12, 0) -- 2% from right, 12% from top
     currentFrame.AnchorPoint = Vector2.new(1, 0)
-    currentFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    currentFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25) -- Dark background like odometer
     currentFrame.BorderSizePixel = 0
     currentFrame.Parent = shopFrame
     
+    -- Automotive border for current trail
+    local currentBorder = Instance.new("UIStroke")
+    currentBorder.Thickness = 1
+    currentBorder.Color = Color3.fromRGB(80, 80, 80)
+    currentBorder.Parent = currentFrame
+    
     local currentCorner = Instance.new("UICorner")
-    currentCorner.CornerRadius = UDim.new(0.15, 0) -- 15% radius for proportional corners
+    currentCorner.CornerRadius = UDim.new(0.05, 0) -- Less rounded for automotive look
     currentCorner.Parent = currentFrame
     
     local currentLabel = Instance.new("TextLabel")
@@ -141,23 +162,30 @@ function TrailShop.createGui()
     currentLabel.Position = UDim2.new(0, 0, 0, 0)
     currentLabel.BackgroundTransparency = 1
     currentLabel.Text = "Current: Orange Fire"
-    currentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    currentLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber color
     currentLabel.TextScaled = true
-    currentLabel.Font = Enum.Font.GothamBold
+    currentLabel.Font = Enum.Font.Highway -- Automotive font
     currentLabel.Parent = currentFrame
     
-    -- Scroll frame for trails - autoscales with screen size
+    -- Scroll frame for trails - automotive dashboard style
     local scrollFrame = Instance.new("ScrollingFrame")
     scrollFrame.Size = UDim2.new(0.96, 0, 0.75, 0) -- 96% width, 75% height
     scrollFrame.Position = UDim2.new(0.02, 0, 0.22, 0) -- 2% from left, 22% from top
-    scrollFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    scrollFrame.BackgroundColor3 = Color3.fromRGB(30, 25, 20) -- Darker housing like odometer
     scrollFrame.BorderSizePixel = 0
     scrollFrame.ScrollBarThickness = 12 -- Thicker for mobile
     scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
     scrollFrame.Parent = shopFrame
     
+    -- Automotive border for scroll area
+    local scrollBorder = Instance.new("UIStroke")
+    scrollBorder.Thickness = 1
+    scrollBorder.Color = Color3.fromRGB(40, 40, 40)
+    scrollBorder.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    scrollBorder.Parent = scrollFrame
+    
     local scrollCorner = Instance.new("UICorner")
-    scrollCorner.CornerRadius = UDim.new(0.05, 0) -- 5% radius for proportional corners
+    scrollCorner.CornerRadius = UDim.new(0.02, 0) -- Less rounded for automotive look
     scrollCorner.Parent = scrollFrame
     
     -- Grid layout for trails - mobile optimized
@@ -209,18 +237,18 @@ function TrailShop.createTrailCard(trailData, index, allTrails, playerData)
     local currentPlayerTrails = playerData and playerData.trails or playerTrails
     local currentEquippedTrail = playerData and playerData.equipped or equippedTrail
     
-    -- Trail card frame - responsive sizing handled by grid layout
+    -- Trail card frame - automotive themed
     local cardFrame = Instance.new("Frame")
     cardFrame.Name = trailData.name
     cardFrame.Size = UDim2.new(0, 200, 0, 120) -- Grid layout will override this
-    cardFrame.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    cardFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Dark automotive gray
     cardFrame.BorderSizePixel = 0 -- Remove fixed border
     cardFrame.LayoutOrder = index
     cardFrame.Parent = scrollFrame
     
-    -- Add border using UIStroke for better scaling
+    -- Add automotive border using UIStroke
     local cardBorder = Instance.new("UIStroke")
-    cardBorder.Thickness = 2
+    cardBorder.Thickness = 1
     cardBorder.Parent = cardFrame
     
     -- Check if trail is unlocked or if it's the next in sequence
@@ -233,16 +261,16 @@ function TrailShop.createTrailCard(trailData, index, allTrails, playerData)
     elseif isUnlocked then
         cardBorder.Color = Color3.fromRGB(100, 100, 100) -- Gray for unlocked
     elseif isNextInSequence then
-        cardBorder.Color = Color3.fromRGB(255, 255, 0) -- Yellow for purchasable
+        cardBorder.Color = Color3.fromRGB(255, 140, 0) -- Amber for purchasable (automotive color)
     else
         cardBorder.Color = Color3.fromRGB(200, 50, 50) -- Red for locked
     end
     
     local cardCorner = Instance.new("UICorner")
-    cardCorner.CornerRadius = UDim.new(0.1, 0) -- 10% radius for proportional corners
+    cardCorner.CornerRadius = UDim.new(0.02, 0) -- Less rounded for automotive look
     cardCorner.Parent = cardFrame
     
-    -- Trail name
+    -- Trail name - automotive style
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Size = UDim2.new(1, 0, 0.25, 0) -- 25% of card height
     nameLabel.Position = UDim2.new(0, 0, 0.02, 0) -- 2% from top
@@ -250,45 +278,49 @@ function TrailShop.createTrailCard(trailData, index, allTrails, playerData)
     nameLabel.Text = trailData.name
     nameLabel.TextColor3 = trailData.color1
     nameLabel.TextScaled = true
-    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.Font = Enum.Font.Highway -- Automotive font
     nameLabel.Parent = cardFrame
     
-    -- Coin multiplier
+    -- Coin multiplier - automotive style
     local multiplierLabel = Instance.new("TextLabel")
     multiplierLabel.Size = UDim2.new(1, 0, 0.2, 0) -- 20% of card height
     multiplierLabel.Position = UDim2.new(0, 0, 0.28, 0) -- Below name
     multiplierLabel.BackgroundTransparency = 1
     local multiplierValue = trailData.coinMultiplier or trailData.speedBoost or 1.0
     multiplierLabel.Text = "Coins: " .. multiplierValue .. "x"
-    multiplierLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+    multiplierLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber automotive color
     multiplierLabel.TextScaled = true
-    multiplierLabel.Font = Enum.Font.Gotham
+    multiplierLabel.Font = Enum.Font.Highway -- Automotive font
     multiplierLabel.Parent = cardFrame
     
-    -- Price
+    -- Price - automotive style
     local priceLabel = Instance.new("TextLabel")
     priceLabel.Size = UDim2.new(1, 0, 0.2, 0) -- 20% of card height
     priceLabel.Position = UDim2.new(0, 0, 0.5, 0) -- Middle of card
     priceLabel.BackgroundTransparency = 1
     priceLabel.Text = trailData.price == 0 and "FREE" or (trailData.price .. " Coins")
-    priceLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+    priceLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber automotive color
     priceLabel.TextScaled = true
-    priceLabel.Font = Enum.Font.Gotham
+    priceLabel.Font = Enum.Font.Highway -- Automotive font
     priceLabel.Parent = cardFrame
     
-    -- Action button
+    -- Action button - automotive style
     local actionButton = Instance.new("TextButton")
     actionButton.Size = UDim2.new(0.9, 0, 0.25, 0) -- 90% width, 25% height of card
     actionButton.Position = UDim2.new(0.05, 0, 0.72, 0) -- Bottom area with small margins
     actionButton.BorderSizePixel = 0
     actionButton.TextScaled = true
-    actionButton.Font = Enum.Font.FredokaOne
+    actionButton.Font = Enum.Font.Highway -- Automotive font
     actionButton.Parent = cardFrame
     
-    -- Button created successfully
+    -- Automotive button border
+    local buttonBorder = Instance.new("UIStroke")
+    buttonBorder.Thickness = 1
+    buttonBorder.Color = Color3.fromRGB(80, 80, 80)
+    buttonBorder.Parent = actionButton
     
     local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0.15, 0) -- 15% radius for proportional corners
+    buttonCorner.CornerRadius = UDim.new(0.05, 0) -- Less rounded for automotive look
     buttonCorner.Parent = actionButton
     
     if isEquipped then
@@ -302,6 +334,44 @@ function TrailShop.createTrailCard(trailData, index, allTrails, playerData)
         -- Connecting EQUIP button
         if actionButton:IsA("TextButton") then
             actionButton.MouseButton1Click:Connect(function()
+                -- Equip animation - button press effect
+                local clickTween = TweenService:Create(actionButton,
+                    TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {Size = UDim2.new(0.85, 0, 0.22, 0)} -- Shrink slightly
+                )
+                local returnTween = TweenService:Create(actionButton,
+                    TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {Size = UDim2.new(0.9, 0, 0.25, 0)} -- Return to normal
+                )
+                
+                clickTween:Play()
+                clickTween.Completed:Connect(function()
+                    returnTween:Play()
+                end)
+                
+                -- Card glow effect while equipping
+                local equipGlow = Instance.new("UIStroke")
+                equipGlow.Name = "EquipGlow"
+                equipGlow.Thickness = 3
+                equipGlow.Color = Color3.fromRGB(0, 255, 0) -- Green glow
+                equipGlow.Transparency = 0.5
+                equipGlow.Parent = cardFrame
+                
+                -- Pulsing glow animation
+                local pulseTween = TweenService:Create(equipGlow,
+                    TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, 3, true),
+                    {Transparency = 0.9}
+                )
+                pulseTween:Play()
+                
+                -- Remove glow after animation
+                spawn(function()
+                    wait(1.5)
+                    if equipGlow and equipGlow.Parent then
+                        equipGlow:Destroy()
+                    end
+                end)
+                
                 equipTrailEvent = getRemoteEvent("EquipTrail")
                 if equipTrailEvent then
                     equipTrailEvent:FireServer(trailData.name)
@@ -319,6 +389,44 @@ function TrailShop.createTrailCard(trailData, index, allTrails, playerData)
         -- Connecting PURCHASE button
         if actionButton:IsA("TextButton") then
             actionButton.MouseButton1Click:Connect(function()
+                -- Purchase animation - button press effect
+                local clickTween = TweenService:Create(actionButton,
+                    TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {Size = UDim2.new(0.85, 0, 0.22, 0)} -- Shrink slightly
+                )
+                local returnTween = TweenService:Create(actionButton,
+                    TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {Size = UDim2.new(0.9, 0, 0.25, 0)} -- Return to normal
+                )
+                
+                clickTween:Play()
+                clickTween.Completed:Connect(function()
+                    returnTween:Play()
+                end)
+                
+                -- Card purchase glow effect
+                local purchaseGlow = Instance.new("UIStroke")
+                purchaseGlow.Name = "PurchaseGlow"
+                purchaseGlow.Thickness = 4
+                purchaseGlow.Color = Color3.fromRGB(255, 140, 0) -- Amber glow
+                purchaseGlow.Transparency = 0.3
+                purchaseGlow.Parent = cardFrame
+                
+                -- Expanding glow animation
+                local expandTween = TweenService:Create(purchaseGlow,
+                    TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                    {Thickness = 8, Transparency = 0.8}
+                )
+                expandTween:Play()
+                
+                -- Remove glow after animation
+                spawn(function()
+                    wait(1)
+                    if purchaseGlow and purchaseGlow.Parent then
+                        purchaseGlow:Destroy()
+                    end
+                end)
+                
                 purchaseTrailEvent = getRemoteEvent("PurchaseTrail")
                 if purchaseTrailEvent then
                     purchaseTrailEvent:FireServer(trailData.name)

@@ -249,134 +249,239 @@
     gearNumber.Font = Enum.Font.Code
     gearNumber.Parent = gearFrame
 
-    -- Nitro Bar - positioned above speedometer
+    -- Nitro Bar - automotive gauge style, positioned above speedometer
     local nitroBarFrame = Instance.new("Frame")
     nitroBarFrame.Name = "NitroBarFrame"
     nitroBarFrame.Size = UDim2.new(0.3, 0, 0.05, 0) -- 30% width, 5% height
     nitroBarFrame.Position = UDim2.new(0.98, 0, 0.68, 0) -- Above speedometer
     nitroBarFrame.AnchorPoint = Vector2.new(1, 1)
-    nitroBarFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Dark background
+    nitroBarFrame.BackgroundColor3 = Color3.fromRGB(40, 35, 30) -- Dark brown/black housing like dashboard
     nitroBarFrame.BorderSizePixel = 0
     nitroBarFrame.Parent = screenGui
     
+    -- Automotive bezel effect for nitro bar
+    local nitroBarBezel = Instance.new("Frame")
+    nitroBarBezel.Size = UDim2.new(0.98, 0, 0.95, 0)
+    nitroBarBezel.Position = UDim2.new(0.01, 0, 0.025, 0)
+    nitroBarBezel.BackgroundColor3 = Color3.fromRGB(30, 25, 20) -- Darker housing for gauge cavity
+    nitroBarBezel.BorderSizePixel = 0
+    nitroBarBezel.Parent = nitroBarFrame
+    
     local nitroBarCorner = Instance.new("UICorner")
-    nitroBarCorner.CornerRadius = UDim.new(0.2, 0)
+    nitroBarCorner.CornerRadius = UDim.new(0.05, 0) -- Less rounded for automotive look
     nitroBarCorner.Parent = nitroBarFrame
     
+    local nitroBezelCorner = Instance.new("UICorner")
+    nitroBezelCorner.CornerRadius = UDim.new(0.05, 0)
+    nitroBezelCorner.Parent = nitroBarBezel
+    
     local nitroBarBorder = Instance.new("UIStroke")
-    nitroBarBorder.Thickness = 2
-    nitroBarBorder.Color = Color3.fromRGB(100, 100, 100)
+    nitroBarBorder.Thickness = 1
+    nitroBarBorder.Color = Color3.fromRGB(80, 80, 80) -- Subtle metallic
     nitroBarBorder.Parent = nitroBarFrame
     
-    -- Nitro fill bar
+    -- Nitro fill bar - automotive gauge style
     local nitroFillBar = Instance.new("Frame")
     nitroFillBar.Name = "NitroFill"
     nitroFillBar.Size = UDim2.new(1, 0, 1, 0) -- Start full
     nitroFillBar.Position = UDim2.new(0, 0, 0, 0)
     nitroFillBar.BackgroundColor3 = Color3.fromRGB(0, 150, 255) -- Blue nitro color
     nitroFillBar.BorderSizePixel = 0
-    nitroFillBar.Parent = nitroBarFrame
+    nitroFillBar.Parent = nitroBarBezel -- Parent to bezel instead of main frame
     
     local nitroFillCorner = Instance.new("UICorner")
-    nitroFillCorner.CornerRadius = UDim.new(0.2, 0)
+    nitroFillCorner.CornerRadius = UDim.new(0.05, 0) -- Match bezel corners
     nitroFillCorner.Parent = nitroFillBar
     
-    -- Nitro label
+    -- Nitro label - automotive dashboard style
     local nitroLabel = Instance.new("TextLabel")
     nitroLabel.Size = UDim2.new(1, 0, 1, 0)
     nitroLabel.Position = UDim2.new(0, 0, 0, 0)
     nitroLabel.BackgroundTransparency = 1
     nitroLabel.Text = "NITRO"
-    nitroLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nitroLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber car dashboard color
     nitroLabel.TextScaled = true
-    nitroLabel.Font = Enum.Font.GothamBold
+    nitroLabel.Font = Enum.Font.Highway -- Automotive font
     nitroLabel.ZIndex = 2
     nitroLabel.Parent = nitroBarFrame
     
-    -- Nitro instruction label
+    -- Nitro instruction label - automotive style
     local nitroInstructionLabel = Instance.new("TextLabel")
     nitroInstructionLabel.Size = UDim2.new(0.25, 0, 0.03, 0)
     nitroInstructionLabel.Position = UDim2.new(0.98, 0, 0.63, 0)
     nitroInstructionLabel.AnchorPoint = Vector2.new(1, 1)
     nitroInstructionLabel.BackgroundTransparency = 1
     nitroInstructionLabel.Text = "Hold SHIFT to boost"
-    nitroInstructionLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    nitroInstructionLabel.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber automotive color
     nitroInstructionLabel.TextScaled = true
-    nitroInstructionLabel.Font = Enum.Font.Gotham
+    nitroInstructionLabel.Font = Enum.Font.Highway -- Automotive font
     nitroInstructionLabel.Parent = screenGui
 
-    -- Speed Upgrade Button - now properly scaling and closer together
+    -- Speed Upgrade Button - circular selector knob style
+    local speedKnobFrame = Instance.new("Frame")
+    speedKnobFrame.Name = "SpeedKnobFrame"
+    speedKnobFrame.Size = UDim2.new(0.12, 0, 0.12, 0) -- Square for perfect circle
+    speedKnobFrame.Position = UDim2.new(0.4, 0, 0.88, 0) -- Positioned for circular design
+    speedKnobFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    speedKnobFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Dark outer ring
+    speedKnobFrame.BorderSizePixel = 0
+    speedKnobFrame.ZIndex = 1
+    speedKnobFrame.Parent = screenGui
+    
+    -- Make it perfectly circular
+    local speedKnobCorner = Instance.new("UICorner")
+    speedKnobCorner.CornerRadius = UDim.new(0.5, 0) -- Perfect circle
+    speedKnobCorner.Parent = speedKnobFrame
+    
+    -- Aspect ratio to ensure perfect circle
+    local speedAspect = Instance.new("UIAspectRatioConstraint")
+    speedAspect.AspectRatio = 1.0
+    speedAspect.Parent = speedKnobFrame
+    
+    -- Outer ring border
+    local speedKnobBorder = Instance.new("UIStroke")
+    speedKnobBorder.Thickness = 2
+    speedKnobBorder.Color = Color3.fromRGB(100, 100, 100)
+    speedKnobBorder.Parent = speedKnobFrame
+    
+    -- Create individual letters for "SPEED" curved around the ring
+    local speedLetters = {"S", "P", "E", "E", "D"}
+    local speedLetterFrames = {}
+    for i, letter in ipairs(speedLetters) do
+        local angle = math.rad(-110 + (i - 1) * 25) -- Start at -110 degrees, space 25 degrees apart
+        local radius = 0.38 -- Distance from center
+        local x = 0.5 + math.cos(angle) * radius
+        local y = 0.5 + math.sin(angle) * radius
+        
+        local letterLabel = Instance.new("TextLabel")
+        letterLabel.Size = UDim2.new(0.08, 0, 0.08, 0)
+        letterLabel.Position = UDim2.new(x, 0, y, 0)
+        letterLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        letterLabel.BackgroundTransparency = 1
+        letterLabel.Text = letter
+        letterLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        letterLabel.TextScaled = true
+        letterLabel.Font = Enum.Font.Highway
+        letterLabel.ZIndex = 2
+        letterLabel.Rotation = math.deg(angle) + 90 -- Rotate to follow curve
+        letterLabel.Parent = speedKnobFrame
+        
+        table.insert(speedLetterFrames, letterLabel)
+    end
+    
+    -- Center pressable button
     local speedButton = Instance.new("TextButton")
     speedButton.Name = "SpeedButton"
-    speedButton.Size = UDim2.new(0.18, 0, 0.08, 0) -- 18% width, 8% height like trail shop
-    speedButton.Position = UDim2.new(0.4, 0, 0.92, 0) -- Moved closer to center
-    speedButton.AnchorPoint = Vector2.new(0.5, 1) -- Center anchor like trail shop
-    speedButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+    speedButton.Size = UDim2.new(0.6, 0, 0.6, 0) -- Smaller center button
+    speedButton.Position = UDim2.new(0.5, 0, 0.5, 0)
+    speedButton.AnchorPoint = Vector2.new(0.5, 0.5)
+    speedButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50) -- Red when can't afford
     speedButton.BorderSizePixel = 0
-    speedButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    speedButton.TextScaled = true
-    speedButton.Font = Enum.Font.FredokaOne
-    speedButton.ZIndex = 1
-    speedButton.Parent = screenGui
-
-    -- Speed button text label (separate from button)
-    local speedText = Instance.new("TextLabel")
-    speedText.Size = UDim2.new(1, 0, 1, 0)
-    speedText.Position = UDim2.new(0, 0, 0, 0)
-    speedText.BackgroundTransparency = 1
-    speedText.Text = "Speed Lv1\n10 Coins"
-    speedText.TextColor3 = Color3.fromRGB(0, 0, 0)
-    speedText.TextScaled = true
-    speedText.Font = Enum.Font.FredokaOne
-    speedText.ZIndex = 3
-    speedText.Parent = speedButton
     speedButton.Text = ""
+    speedButton.ZIndex = 3
+    speedButton.Parent = speedKnobFrame
+    
+    -- Center button circular
+    local speedButtonCorner = Instance.new("UICorner")
+    speedButtonCorner.CornerRadius = UDim.new(0.5, 0)
+    speedButtonCorner.Parent = speedButton
+    
+    -- Speed info text below button
+    local speedInfoText = Instance.new("TextLabel")
+    speedInfoText.Name = "SpeedInfoText"
+    speedInfoText.Size = UDim2.new(0.15, 0, 0.04, 0)
+    speedInfoText.Position = UDim2.new(0.4, 0, 0.98, 0) -- Further below the speed button
+    speedInfoText.AnchorPoint = Vector2.new(0.5, 0.5)
+    speedInfoText.BackgroundTransparency = 1
+    speedInfoText.Text = "LV1 - 10 COINS"
+    speedInfoText.TextColor3 = Color3.fromRGB(255, 140, 0)
+    speedInfoText.TextScaled = true
+    speedInfoText.Font = Enum.Font.Highway
+    speedInfoText.ZIndex = 2
+    speedInfoText.Parent = screenGui
 
-    local speedCorner = Instance.new("UICorner")
-    speedCorner.CornerRadius = UDim.new(0, 8)
-    speedCorner.Parent = speedButton
-
-    -- Speed button fill bar
-    local speedFill = Instance.new("Frame")
-    speedFill.Name = "FillBar"
-    speedFill.Size = UDim2.new(1, 0, 0, 0)
-    speedFill.Position = UDim2.new(0, 0, 1, 0)
-    speedFill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-    speedFill.BackgroundTransparency = 0.3
-    speedFill.BorderSizePixel = 0
-    speedFill.ZIndex = 2
-    speedFill.Parent = speedButton
-
-    local speedFillCorner = Instance.new("UICorner")
-    speedFillCorner.CornerRadius = UDim.new(0, 8)
-    speedFillCorner.Parent = speedFill
-
-    -- Jump Upgrade Button - now properly scaling and closer together
+    -- Jump Upgrade Button - circular selector knob style
+    local jumpKnobFrame = Instance.new("Frame")
+    jumpKnobFrame.Name = "JumpKnobFrame"
+    jumpKnobFrame.Size = UDim2.new(0.12, 0, 0.12, 0) -- Square for perfect circle
+    jumpKnobFrame.Position = UDim2.new(0.6, 0, 0.88, 0) -- Positioned for circular design
+    jumpKnobFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    jumpKnobFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Dark outer ring
+    jumpKnobFrame.BorderSizePixel = 0
+    jumpKnobFrame.ZIndex = 1
+    jumpKnobFrame.Parent = screenGui
+    
+    -- Make it perfectly circular
+    local jumpKnobCorner = Instance.new("UICorner")
+    jumpKnobCorner.CornerRadius = UDim.new(0.5, 0) -- Perfect circle
+    jumpKnobCorner.Parent = jumpKnobFrame
+    
+    -- Aspect ratio to ensure perfect circle
+    local jumpAspect = Instance.new("UIAspectRatioConstraint")
+    jumpAspect.AspectRatio = 1.0
+    jumpAspect.Parent = jumpKnobFrame
+    
+    -- Outer ring border
+    local jumpKnobBorder = Instance.new("UIStroke")
+    jumpKnobBorder.Thickness = 2
+    jumpKnobBorder.Color = Color3.fromRGB(100, 100, 100)
+    jumpKnobBorder.Parent = jumpKnobFrame
+    
+    -- Create individual letters for "JUMP" curved around the ring
+    local jumpLetters = {"J", "U", "M", "P"}
+    local jumpLetterFrames = {}
+    for i, letter in ipairs(jumpLetters) do
+        local angle = math.rad(-105 + (i - 1) * 30) -- Start at -105 degrees, space 30 degrees apart
+        local radius = 0.38 -- Distance from center
+        local x = 0.5 + math.cos(angle) * radius
+        local y = 0.5 + math.sin(angle) * radius
+        
+        local letterLabel = Instance.new("TextLabel")
+        letterLabel.Size = UDim2.new(0.08, 0, 0.08, 0)
+        letterLabel.Position = UDim2.new(x, 0, y, 0)
+        letterLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        letterLabel.BackgroundTransparency = 1
+        letterLabel.Text = letter
+        letterLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+        letterLabel.TextScaled = true
+        letterLabel.Font = Enum.Font.Highway
+        letterLabel.ZIndex = 2
+        letterLabel.Rotation = math.deg(angle) + 90 -- Rotate to follow curve
+        letterLabel.Parent = jumpKnobFrame
+        
+        table.insert(jumpLetterFrames, letterLabel)
+    end
+    
+    -- Center pressable button
     local jumpButton = Instance.new("TextButton")
     jumpButton.Name = "JumpButton"
-    jumpButton.Size = UDim2.new(0.18, 0, 0.08, 0) -- 18% width, 8% height like trail shop
-    jumpButton.Position = UDim2.new(0.6, 0, 0.92, 0) -- Moved closer to center
-    jumpButton.AnchorPoint = Vector2.new(0.5, 1) -- Center anchor like trail shop
-    jumpButton.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+    jumpButton.Size = UDim2.new(0.6, 0, 0.6, 0) -- Smaller center button
+    jumpButton.Position = UDim2.new(0.5, 0, 0.5, 0)
+    jumpButton.AnchorPoint = Vector2.new(0.5, 0.5)
+    jumpButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50) -- Red when can't afford
     jumpButton.BorderSizePixel = 0
-    jumpButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-    jumpButton.TextScaled = true
-    jumpButton.Font = Enum.Font.FredokaOne
-    jumpButton.ZIndex = 1
-    jumpButton.Parent = screenGui
-
-    -- Jump button text label (separate from button)
-    local jumpText = Instance.new("TextLabel")
-    jumpText.Size = UDim2.new(1, 0, 1, 0)
-    jumpText.Position = UDim2.new(0, 0, 0, 0)
-    jumpText.BackgroundTransparency = 1
-    jumpText.Text = "Jump Lv1\n15 Coins"
-    jumpText.TextColor3 = Color3.fromRGB(0, 0, 0)
-    jumpText.TextScaled = true
-    jumpText.Font = Enum.Font.FredokaOne
-    jumpText.ZIndex = 3
-    jumpText.Parent = jumpButton
     jumpButton.Text = ""
+    jumpButton.ZIndex = 3
+    jumpButton.Parent = jumpKnobFrame
+    
+    -- Center button circular
+    local jumpButtonCorner = Instance.new("UICorner")
+    jumpButtonCorner.CornerRadius = UDim.new(0.5, 0)
+    jumpButtonCorner.Parent = jumpButton
+    
+    -- Jump info text below button
+    local jumpInfoText = Instance.new("TextLabel")
+    jumpInfoText.Name = "JumpInfoText"
+    jumpInfoText.Size = UDim2.new(0.15, 0, 0.04, 0)
+    jumpInfoText.Position = UDim2.new(0.6, 0, 0.98, 0) -- Further below the jump button
+    jumpInfoText.AnchorPoint = Vector2.new(0.5, 0.5)
+    jumpInfoText.BackgroundTransparency = 1
+    jumpInfoText.Text = "LV1 - 15 COINS"
+    jumpInfoText.TextColor3 = Color3.fromRGB(255, 140, 0)
+    jumpInfoText.TextScaled = true
+    jumpInfoText.Font = Enum.Font.Highway
+    jumpInfoText.ZIndex = 2
+    jumpInfoText.Parent = screenGui
 
     -- NOW start the speedometer update loop (after all GUI is created)
     spawn(function()
@@ -452,7 +557,9 @@
     
     -- Function to update nitro bar display
     local function updateNitroBar(currentNitro, maxNitro, isActive)
-        local nitroFill = nitroBarFrame:FindFirstChild("NitroFill")
+        -- Look for NitroFill in the bezel instead of the main frame
+        local nitroBezel = nitroBarFrame:FindFirstChild("Frame") -- The bezel frame
+        local nitroFill = nitroBezel and nitroBezel:FindFirstChild("NitroFill")
         if not nitroFill then return end
         
         local fillPercentage = currentNitro / maxNitro
@@ -713,8 +820,14 @@
     end)
 
     local jumpCorner = Instance.new("UICorner")
-    jumpCorner.CornerRadius = UDim.new(0, 8)
+    jumpCorner.CornerRadius = UDim.new(0, 4) -- Less rounded for car look
     jumpCorner.Parent = jumpButton
+    
+    -- Add automotive border effect
+    local jumpBorder = Instance.new("UIStroke")
+    jumpBorder.Thickness = 1
+    jumpBorder.Color = Color3.fromRGB(80, 80, 80)
+    jumpBorder.Parent = jumpButton
 
     -- Jump button fill bar
     local jumpFill = Instance.new("Frame")
@@ -731,24 +844,30 @@
     jumpFillCorner.CornerRadius = UDim.new(0, 8)
     jumpFillCorner.Parent = jumpFill
 
-    -- Fire Trail Shop Button - now properly scaling
+    -- Car Accessories Shop Button - automotive themed
     local trailButton = Instance.new("TextButton")
     trailButton.Name = "TrailButton"
     trailButton.Size = UDim2.new(0.15, 0, 0.06, 0) -- 15% width, 6% height like trail shop
     trailButton.Position = UDim2.new(0.02, 0, 0.92, 0) -- 2% from left, 8% from bottom
     trailButton.AnchorPoint = Vector2.new(0, 1) -- Left anchor like trail shop
-    trailButton.BackgroundColor3 = Color3.fromRGB(255, 140, 0)
+    trailButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60) -- Dark automotive gray
     trailButton.BorderSizePixel = 0
-    trailButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    trailButton.TextColor3 = Color3.fromRGB(255, 140, 0) -- Amber accent
     trailButton.TextScaled = true
-    trailButton.Font = Enum.Font.FredokaOne
-    trailButton.Text = "Trail Shop"
+    trailButton.Font = Enum.Font.Highway
+    trailButton.Text = "TRAIL SHOP"
     trailButton.ZIndex = 1
     trailButton.Parent = screenGui
 
     local trailCorner = Instance.new("UICorner")
-    trailCorner.CornerRadius = UDim.new(0, 8)
+    trailCorner.CornerRadius = UDim.new(0, 4) -- Less rounded for car look
     trailCorner.Parent = trailButton
+    
+    -- Add automotive border effect
+    local trailBorder = Instance.new("UIStroke")
+    trailBorder.Thickness = 1
+    trailBorder.Color = Color3.fromRGB(80, 80, 80)
+    trailBorder.Parent = trailButton
 
     local function updateButtonDisplay()
         local leaderstats = player:FindFirstChild("leaderstats")
@@ -782,60 +901,140 @@
             if gearDisplay then
                 gearDisplay.Text = tostring(speedLevel.Value)
             end
-            -- Speed button update
+            -- Speed knob update
             local speedCost = 10 + ((speedLevel.Value - 1) * 5)
-            local speedTextLabel = speedButton:FindFirstChild("TextLabel")
-            if speedTextLabel then
-                speedTextLabel.Text = "Speed Lv" .. speedLevel.Value .. "\n" .. speedCost .. " Coins"
+            local canAffordSpeed = coins.Value >= speedCost
+            
+            -- Update speed info text
+            if speedInfoText then
+                speedInfoText.Text = "LV" .. speedLevel.Value .. " - " .. speedCost .. " COINS"
             end
             
-            -- Speed fill bar progress with tween
-            local speedProgress = math.min(coins.Value / speedCost, 1)
-            local speedFillBar = speedButton:FindFirstChild("FillBar")
-            if speedFillBar then
-                local targetSize = UDim2.new(1, 0, speedProgress, 0)
-                local targetPosition = UDim2.new(0, 0, 1 - speedProgress, 0)
-                
-                local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                local sizeTween = TweenService:Create(speedFillBar, tweenInfo, {Size = targetSize})
-                local positionTween = TweenService:Create(speedFillBar, tweenInfo, {Position = targetPosition})
-                
-                sizeTween:Play()
-                positionTween:Play()
+            -- Update speed center button color and neon effect
+            if speedButton then
+                if canAffordSpeed then
+                    speedButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50) -- Green when affordable
+                    
+                    -- Add neon glow effect when affordable
+                    local speedNeonGlow = speedButton:FindFirstChild("NeonGlow")
+                    if not speedNeonGlow then
+                        speedNeonGlow = Instance.new("UIStroke")
+                        speedNeonGlow.Name = "NeonGlow"
+                        speedNeonGlow.Parent = speedButton
+                    end
+                    speedNeonGlow.Thickness = 4
+                    speedNeonGlow.Color = Color3.fromRGB(0, 255, 0) -- Bright green glow
+                    speedNeonGlow.Transparency = 0.3
+                    
+                    -- Pulsing glow animation
+                    spawn(function()
+                        while speedNeonGlow and speedNeonGlow.Parent and canAffordSpeed do
+                            local pulseTween = TweenService:Create(speedNeonGlow,
+                                TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+                                {Transparency = 0.8}
+                            )
+                            pulseTween:Play()
+                            wait(0.8)
+                        end
+                    end)
+                else
+                    speedButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50) -- Red when can't afford
+                    
+                    -- Remove neon glow when not affordable
+                    local speedNeonGlow = speedButton:FindFirstChild("NeonGlow")
+                    if speedNeonGlow then
+                        speedNeonGlow:Destroy()
+                    end
+                end
             end
             
             
-            -- Jump button update
+            -- Jump knob update
             local jumpCost = 15 + ((jumpLevel.Value - 1) * 8)
-            local jumpTextLabel = jumpButton:FindFirstChild("TextLabel")
-            if jumpTextLabel then
-                jumpTextLabel.Text = "Jump Lv" .. jumpLevel.Value .. "\n" .. jumpCost .. " Coins"
+            local canAffordJump = coins.Value >= jumpCost
+            
+            -- Update jump info text
+            if jumpInfoText then
+                jumpInfoText.Text = "LV" .. jumpLevel.Value .. " - " .. jumpCost .. " COINS"
             end
             
-            -- Jump fill bar progress with tween
-            local jumpProgress = math.min(coins.Value / jumpCost, 1)
-            local jumpFillBar = jumpButton:FindFirstChild("FillBar")
-            if jumpFillBar then
-                local targetSize = UDim2.new(1, 0, jumpProgress, 0)
-                local targetPosition = UDim2.new(0, 0, 1 - jumpProgress, 0)
-                
-                local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-                local sizeTween = TweenService:Create(jumpFillBar, tweenInfo, {Size = targetSize})
-                local positionTween = TweenService:Create(jumpFillBar, tweenInfo, {Position = targetPosition})
-                
-                sizeTween:Play()
-                positionTween:Play()
+            -- Update jump center button color and neon effect
+            if jumpButton then
+                if canAffordJump then
+                    jumpButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50) -- Green when affordable
+                    
+                    -- Add neon glow effect when affordable
+                    local jumpNeonGlow = jumpButton:FindFirstChild("NeonGlow")
+                    if not jumpNeonGlow then
+                        jumpNeonGlow = Instance.new("UIStroke")
+                        jumpNeonGlow.Name = "NeonGlow"
+                        jumpNeonGlow.Parent = jumpButton
+                    end
+                    jumpNeonGlow.Thickness = 4
+                    jumpNeonGlow.Color = Color3.fromRGB(0, 255, 0) -- Bright green glow
+                    jumpNeonGlow.Transparency = 0.3
+                    
+                    -- Pulsing glow animation
+                    spawn(function()
+                        while jumpNeonGlow and jumpNeonGlow.Parent and canAffordJump do
+                            local pulseTween = TweenService:Create(jumpNeonGlow,
+                                TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+                                {Transparency = 0.8}
+                            )
+                            pulseTween:Play()
+                            wait(0.8)
+                        end
+                    end)
+                else
+                    jumpButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50) -- Red when can't afford
+                    
+                    -- Remove neon glow when not affordable
+                    local jumpNeonGlow = jumpButton:FindFirstChild("NeonGlow")
+                    if jumpNeonGlow then
+                        jumpNeonGlow:Destroy()
+                    end
+                end
             end
             
         end
     end
 
     speedButton.MouseButton1Click:Connect(function()
+        -- Click animation - shrink and grow back
+        local clickTween = TweenService:Create(speedButton,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0.5, 0, 0.5, 0)} -- Shrink slightly
+        )
+        local returnTween = TweenService:Create(speedButton,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0.6, 0, 0.6, 0)} -- Return to normal size
+        )
+        
+        clickTween:Play()
+        clickTween.Completed:Connect(function()
+            returnTween:Play()
+        end)
+        
         local remoteEvent = ReplicatedStorage:WaitForChild("PurchaseSpeedUpgrade")
         remoteEvent:FireServer()
     end)
 
     jumpButton.MouseButton1Click:Connect(function()
+        -- Click animation - shrink and grow back
+        local clickTween = TweenService:Create(jumpButton,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0.5, 0, 0.5, 0)} -- Shrink slightly
+        )
+        local returnTween = TweenService:Create(jumpButton,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0.6, 0, 0.6, 0)} -- Return to normal size
+        )
+        
+        clickTween:Play()
+        clickTween.Completed:Connect(function()
+            returnTween:Play()
+        end)
+        
         local remoteEvent = ReplicatedStorage:WaitForChild("PurchaseJumpUpgrade")
         remoteEvent:FireServer()
     end)
