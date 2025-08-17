@@ -155,7 +155,7 @@
     needle.BorderSizePixel = 0
     needle.AnchorPoint = Vector2.new(0.5, 0.5)
     needle.ZIndex = 3
-    needle.Rotation = -320 -- Starting angle
+    needle.Rotation = -230 -- Starting angle to match tick marks
     needle.Parent = speedometerInner
 
     -- White pointing side (entire half that reads the numbers)
@@ -530,7 +530,7 @@
             local speedProgress = math.min(adjustedSpeed / speedRange, 1)
             
             -- Calculate needle angle to match the current gauge numbers
-            local startAngle = -320  -- Same starting position
+            local startAngle = -230  -- Match tick marks starting position
             local sweepRange = 270   -- Same sweep range
             local needleAngle = startAngle + (speedProgress * sweepRange)
             
