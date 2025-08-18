@@ -317,6 +317,138 @@
     nitroInstructionLabel.Font = Enum.Font.Highway -- Automotive font
     nitroInstructionLabel.Parent = screenGui
 
+    -- Mobile Nitro Button - automotive push button style
+    local mobileNitroButton = Instance.new("TextButton")
+    mobileNitroButton.Name = "MobileNitroButton"
+    mobileNitroButton.Size = UDim2.new(0.15, 0, 0.15, 0) -- Square for perfect circle
+    mobileNitroButton.Position = UDim2.new(0.85, 0, 0.5, 0) -- Right side of screen, middle
+    mobileNitroButton.AnchorPoint = Vector2.new(0.5, 0.5)
+    mobileNitroButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Dark outer ring like image
+    mobileNitroButton.BorderSizePixel = 0
+    mobileNitroButton.Text = ""
+    mobileNitroButton.ZIndex = 5
+    mobileNitroButton.Parent = screenGui
+    
+    -- Make it perfectly circular
+    local mobileNitroCorner = Instance.new("UICorner")
+    mobileNitroCorner.CornerRadius = UDim.new(0.5, 0) -- Perfect circle
+    mobileNitroCorner.Parent = mobileNitroButton
+    
+    -- Aspect ratio to ensure perfect circle
+    local mobileNitroAspect = Instance.new("UIAspectRatioConstraint")
+    mobileNitroAspect.AspectRatio = 1.0
+    mobileNitroAspect.Parent = mobileNitroButton
+    
+    -- Chrome/metallic outer ring
+    local mobileNitroBorder = Instance.new("UIStroke")
+    mobileNitroBorder.Thickness = 3
+    mobileNitroBorder.Color = Color3.fromRGB(120, 120, 120) -- Chrome metallic
+    mobileNitroBorder.Parent = mobileNitroButton
+    
+    -- White ring (like in the image)
+    local whiteRing = Instance.new("Frame")
+    whiteRing.Size = UDim2.new(0.8, 0, 0.8, 0)
+    whiteRing.Position = UDim2.new(0.5, 0, 0.5, 0)
+    whiteRing.AnchorPoint = Vector2.new(0.5, 0.5)
+    whiteRing.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White ring
+    whiteRing.BorderSizePixel = 0
+    whiteRing.ZIndex = 6
+    whiteRing.Parent = mobileNitroButton
+    
+    local whiteRingCorner = Instance.new("UICorner")
+    whiteRingCorner.CornerRadius = UDim.new(0.5, 0)
+    whiteRingCorner.Parent = whiteRing
+    
+    -- Red center button (like in the image)
+    local redCenter = Instance.new("Frame")
+    redCenter.Size = UDim2.new(0.4, 0, 0.4, 0)
+    redCenter.Position = UDim2.new(0.5, 0, 0.5, 0)
+    redCenter.AnchorPoint = Vector2.new(0.5, 0.5)
+    redCenter.BackgroundColor3 = Color3.fromRGB(220, 50, 50) -- Red center
+    redCenter.BorderSizePixel = 0
+    redCenter.ZIndex = 7
+    redCenter.Parent = whiteRing
+    
+    local redCenterCorner = Instance.new("UICorner")
+    redCenterCorner.CornerRadius = UDim.new(0.5, 0)
+    redCenterCorner.Parent = redCenter
+    
+    -- "GO BABY GO" text: GO left, BABY top, GO right
+    
+    -- Left "GO" section (left side)
+    local leftLetters = {"G", "O"}
+    local leftAngles = {140, 180} -- Left side positions (moved up slightly)
+    for i, letter in ipairs(leftLetters) do
+        local letterLabel = Instance.new("TextLabel")
+        letterLabel.Name = "LeftLetter" .. i
+        letterLabel.Size = UDim2.new(0.14, 0, 0.14, 0)
+        letterLabel.BackgroundTransparency = 1
+        letterLabel.Text = letter
+        letterLabel.TextColor3 = Color3.fromRGB(40, 40, 40)
+        letterLabel.TextScaled = true
+        letterLabel.Font = Enum.Font.GothamBold
+        letterLabel.ZIndex = 8
+        letterLabel.Parent = whiteRing
+        
+        local angle = math.rad(leftAngles[i])
+        local radius = 0.33
+        local x = 0.5 + math.cos(angle) * radius
+        local y = 0.5 + math.sin(angle) * radius
+        letterLabel.Position = UDim2.new(x, 0, y, 0)
+        letterLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        letterLabel.Rotation = math.deg(angle) + 90
+    end
+    
+    -- Top "BABY" section
+    local babyLetters = {"B", "A", "B", "Y"}
+    local babyAngles = {-135, -105, -75, -45} -- Top positions centered and going clockwise
+    for i, letter in ipairs(babyLetters) do
+        local letterLabel = Instance.new("TextLabel")
+        letterLabel.Name = "BabyLetter" .. i
+        letterLabel.Size = UDim2.new(0.14, 0, 0.14, 0)
+        letterLabel.BackgroundTransparency = 1
+        letterLabel.Text = letter
+        letterLabel.TextColor3 = Color3.fromRGB(40, 40, 40)
+        letterLabel.TextScaled = true
+        letterLabel.Font = Enum.Font.GothamBold
+        letterLabel.ZIndex = 8
+        letterLabel.Parent = whiteRing
+        
+        local angle = math.rad(babyAngles[i])
+        local radius = 0.33
+        local x = 0.5 + math.cos(angle) * radius
+        local y = 0.5 + math.sin(angle) * radius
+        letterLabel.Position = UDim2.new(x, 0, y, 0)
+        letterLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        letterLabel.Rotation = math.deg(angle) + 90
+    end
+    
+    -- Right "GO" section (right side)
+    local rightLetters = {"O", "G"} -- Reversed order so it reads "GO" correctly when going clockwise
+    local rightAngles = {40, 0} -- Right side positions (moved up slightly to match left GO)
+    for i, letter in ipairs(rightLetters) do
+        local letterLabel = Instance.new("TextLabel")
+        letterLabel.Name = "RightLetter" .. i
+        letterLabel.Size = UDim2.new(0.14, 0, 0.14, 0)
+        letterLabel.BackgroundTransparency = 1
+        letterLabel.Text = letter
+        letterLabel.TextColor3 = Color3.fromRGB(40, 40, 40)
+        letterLabel.TextScaled = true
+        letterLabel.Font = Enum.Font.GothamBold
+        letterLabel.ZIndex = 8
+        letterLabel.Parent = whiteRing
+        
+        local angle = math.rad(rightAngles[i])
+        local radius = 0.33
+        local x = 0.5 + math.cos(angle) * radius
+        local y = 0.5 + math.sin(angle) * radius
+        letterLabel.Position = UDim2.new(x, 0, y, 0)
+        letterLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+        letterLabel.Rotation = math.deg(angle) + 90
+    end
+    
+    -- Mobile nitro button functionality will be added after getNitroRemoteEvent function
+
     -- Speed Upgrade Button - circular selector knob style
     local speedKnobFrame = Instance.new("Frame")
     speedKnobFrame.Name = "SpeedKnobFrame"
@@ -553,6 +685,73 @@
     -- Function to safely get nitro remote events
     local function getNitroRemoteEvent(name)
         return ReplicatedStorage:FindFirstChild(name)
+    end
+    
+    -- Mobile nitro button functionality
+    local isMobileNitroPressed = false
+    local mobileNitroButton = screenGui:FindFirstChild("MobileNitroButton")
+    
+    if mobileNitroButton then
+        local redCenter = mobileNitroButton:FindFirstChild("Frame"):FindFirstChild("Frame") -- Navigate to red center
+        local whiteRing = mobileNitroButton:FindFirstChild("Frame") -- White ring
+        
+        mobileNitroButton.MouseButton1Down:Connect(function()
+            if not isMobileNitroPressed and not isShiftPressed then
+                isMobileNitroPressed = true
+                isShiftPressed = true -- Use same flag as keyboard
+                local startNitroEvent = getNitroRemoteEvent("StartNitro")
+                if startNitroEvent then
+                    startNitroEvent:FireServer()
+                end
+                
+                -- Visual feedback - button pressed effect
+                if redCenter then
+                    redCenter.BackgroundColor3 = Color3.fromRGB(180, 30, 30) -- Darker red when pressed
+                end
+                if whiteRing then
+                    whiteRing.BackgroundColor3 = Color3.fromRGB(240, 240, 240) -- Slightly darker white
+                end
+            end
+        end)
+        
+        mobileNitroButton.MouseButton1Up:Connect(function()
+            if isMobileNitroPressed then
+                isMobileNitroPressed = false
+                isShiftPressed = false -- Use same flag as keyboard
+                local stopNitroEvent = getNitroRemoteEvent("StopNitro")
+                if stopNitroEvent then
+                    stopNitroEvent:FireServer()
+                end
+                
+                -- Visual feedback - button released effect
+                if redCenter then
+                    redCenter.BackgroundColor3 = Color3.fromRGB(220, 50, 50) -- Back to normal red
+                end
+                if whiteRing then
+                    whiteRing.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Back to white
+                end
+            end
+        end)
+        
+        -- Handle when touch/mouse leaves the button area
+        mobileNitroButton.MouseLeave:Connect(function()
+            if isMobileNitroPressed then
+                isMobileNitroPressed = false
+                isShiftPressed = false
+                local stopNitroEvent = getNitroRemoteEvent("StopNitro")
+                if stopNitroEvent then
+                    stopNitroEvent:FireServer()
+                end
+                
+                -- Visual feedback - button released effect
+                if redCenter then
+                    redCenter.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+                end
+                if whiteRing then
+                    whiteRing.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+                end
+            end
+        end)
     end
     
     -- Function to update nitro bar display
